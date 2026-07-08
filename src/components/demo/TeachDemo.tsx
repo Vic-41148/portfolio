@@ -353,7 +353,7 @@ export function TeachDemo() {
         <p className="text-sm text-text-muted mb-6 max-w-md">{error}</p>
         <button
           onClick={startCamera}
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-accent text-sm font-medium hover:brightness-110 transition-all active:scale-[0.98]"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-accent text-accent-foreground text-sm font-medium hover:brightness-110 transition-all active:scale-[0.98]"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Try again
@@ -433,7 +433,7 @@ export function TeachDemo() {
               onClick={startCamera}
               disabled={loading}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-accent text-base font-medium transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 glow-accent"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-accent text-accent-foreground text-base font-medium transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 glow-accent"
             >
               <Camera className="w-4 h-4" />
               Turn on camera
@@ -534,7 +534,7 @@ export function TeachDemo() {
                   <button
                     onClick={addClass}
                     disabled={gestureClasses.length >= 5}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-xs text-base font-medium hover:brightness-110 transition-all disabled:opacity-30"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-accent text-accent-foreground text-xs font-medium hover:brightness-110 transition-all disabled:opacity-30"
                   >
                     <Plus className="w-3 h-3" />
                     Add
@@ -614,7 +614,7 @@ export function TeachDemo() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   whileTap={{ scale: 0.97 }}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-demo-success text-base text-sm font-medium hover:brightness-110 transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-demo-success text-demo-success-foreground text-sm font-medium hover:brightness-110 transition-all"
                 >
                   <Trophy className="w-4 h-4" />
                   Train model &amp; start classifying

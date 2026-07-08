@@ -167,7 +167,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           {project.links.demo && (
             <a
               href={project.links.demo}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:brightness-110 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-accent-foreground text-sm font-medium hover:brightness-110 transition-all"
             >
               <ExternalLink className="w-4 h-4" />
               Live demo

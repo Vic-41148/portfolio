@@ -4,6 +4,7 @@
   --color-accent: var(--accent);
   --color-accent-muted: var(--accent-muted);
   --color-accent-strong: var(--accent-strong);
+  --color-accent-foreground: var(--accent-foreground);
   --color-bg: var(--bg);
   --color-bg-alt: var(--bg-alt);
   --color-surface: var(--surface);
@@ -14,6 +15,7 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-demo-success: var(--demo-success);
+  --color-demo-success-foreground: var(--demo-success-foreground);
   --color-demo-warning: var(--demo-warning);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -33,7 +35,10 @@
   --accent: #0E7490;
   --accent-muted: rgba(14, 116, 144, 0.1);
   --accent-strong: #155E75;
+  --accent-foreground: #FFFFFF;
   --demo-success: #059669;
+  /* White on #059669 is ~3.8:1, below AA 4.5:1 for normal text */
+  --demo-success-foreground: #071012;
   --demo-warning: #D97706;
   --grain-opacity: 0.02;
 }
@@ -51,7 +56,10 @@
   --accent: #22D3EE;
   --accent-muted: rgba(34, 211, 238, 0.12);
   --accent-strong: #67E8F9;
+  /* Bright cyan needs a dark foreground to hit 4.5:1 — white on #22D3EE is ~1.8:1 */
+  --accent-foreground: #071012;
   --demo-success: #22D68C;
+  --demo-success-foreground: #071012;
   --demo-warning: #F5A623;
   --grain-opacity: 0.04;
 }

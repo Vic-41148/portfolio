@@ -121,8 +121,8 @@ export function Contact() {
                   "inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-all",
                   "focus-ring",
                   state === "success"
-                    ? "bg-demo-success text-white"
-                    : "bg-accent text-white hover:brightness-110",
+                    ? "bg-demo-success text-demo-success-foreground"
+                    : "bg-accent text-accent-foreground hover:brightness-110",
                   (state === "sending" || state === "success") &&
                     "cursor-not-allowed"
                 )}
