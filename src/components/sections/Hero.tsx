@@ -3,16 +3,21 @@
 import { motion } from "motion/react";
 import { ArrowDown } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Hero() {
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden">
       {/* Generated ambient gradient texture, low opacity so it enhances rather than replaces the CSS gradient */}
-      <img
+      <Image
         src="/images/textures/hero-gradient.webp"
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen pointer-events-none select-none"
+        fill
+        preload
+        fetchPriority="high"
+        sizes="100vw"
+        className="object-cover opacity-30 mix-blend-screen pointer-events-none select-none"
       />
       {/* Signature scanline motif, very restrained */}
       <div
@@ -72,7 +77,7 @@ export function Hero() {
         >
           <Link
             href="#work"
-            className="btn-lift inline-flex items-center gap-2 px-6 py-3 rounded-full bg-accent text-white dark:text-white text-base font-medium transition-all hover:brightness-110 active:scale-[0.98] focus-ring glow-accent"
+            className="btn-lift inline-flex items-center gap-2 px-6 py-3 rounded-full bg-accent text-accent-foreground text-base font-medium transition-all hover:brightness-110 active:scale-[0.98] focus-ring glow-accent"
           >
             See my work
             <ArrowDown className="w-4 h-4" />
