@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, Shield, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Reveal } from "@/components/Reveal";
+import { Reveal, MaskText } from "@/components/Reveal";
 import { motion } from "motion/react";
 import { TeachDemo } from "@/components/demo/TeachDemo";
 
@@ -27,7 +27,7 @@ export function LiveDemo() {
               <span className="text-accent">&#9733;</span> Live Demo
             </p>
             <h2 className="section-heading">
-              Teach my page to see you
+              <MaskText>Teach my page to see you</MaskText>
             </h2>
             <div className="flex flex-wrap items-center gap-3 mt-4">
               <p className="section-desc !mt-0 flex-1 min-w-[260px]">
@@ -47,9 +47,11 @@ export function LiveDemo() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="rounded-2xl border border-accent/25 bg-surface overflow-hidden glow-accent"
+          className="demo-frame glow-accent"
         >
-          <TeachDemo />
+          <div className="overflow-hidden">
+            <TeachDemo />
+          </div>
         </motion.div>
 
         <div className="mt-6 flex items-center justify-between gap-4 flex-wrap">

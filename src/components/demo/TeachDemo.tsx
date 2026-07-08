@@ -387,8 +387,10 @@ export function TeachDemo() {
         {/* Idle state: camera not yet active */}
         {!cameraActive && (
           <div className="flex flex-col items-center justify-center py-14 sm:py-16 px-6 text-center">
-            {/* Preview illustration */}
-            <div className="w-20 h-20 rounded-2xl bg-accent-muted border border-accent/20 flex items-center justify-center mb-5">
+            {/* Preview illustration with radiating pulse rings */}
+            <div className="relative w-20 h-20 rounded-2xl bg-accent-muted border border-accent/20 flex items-center justify-center mb-5">
+              <span className="pulse-ring" aria-hidden="true" />
+              <span className="pulse-ring pulse-ring-late" aria-hidden="true" />
               <Camera className="w-9 h-9 text-accent" />
             </div>
 
@@ -433,7 +435,7 @@ export function TeachDemo() {
               onClick={startCamera}
               disabled={loading}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-accent text-accent-foreground text-base font-medium transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 glow-accent"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-accent text-accent-foreground text-base font-medium transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 glow-pulse btn-sheen"
             >
               <Camera className="w-4 h-4" />
               Turn on camera
