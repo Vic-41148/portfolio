@@ -33,6 +33,10 @@ const allProjects = [
     external: true,
     meta: "\u26055 · 4 forks",
     feature: true,
+    // TODO(real-cover): replace backdrop.webp fallback with a real architecture
+    // diagram (attack -> defense -> eval flow) at /images/projects/secure-llm-arch.svg
+    // per handoff #3 B1 row 02. Do not fabricate a screenshot.
+    backdrop: true,
   },
   {
     num: "03",
@@ -46,6 +50,9 @@ const allProjects = [
     href: "https://github.com/Vic-41148/CodeShield-Distributed-Log-Anomaly-Detection-Engine",
     external: true,
     meta: "ThinkFest 2026",
+    // TODO(real-cover): replace with real architecture diagram (concurrent streams ->
+    // 5-min sliding window -> anomaly flag) or terminal capture at
+    // /images/projects/codeshield-arch.svg per handoff #3 B1 row 03.
   },
   {
     num: "04",
@@ -58,6 +65,9 @@ const allProjects = [
     gradient: "from-accent/10 to-transparent",
     href: "https://github.com/Vic-41148/lint-game-boy-emu",
     external: true,
+    // TODO(real-cover): replace with a real screenshot of a game running in the
+    // emulator at /images/projects/emulator-shot.png per handoff #3 B1 row 04 —
+    // the standout asset, get this one done first.
   },
   {
     num: "05",
@@ -70,6 +80,8 @@ const allProjects = [
     gradient: "from-accent/10 to-transparent",
     href: "https://github.com/Vic-41148/primetrade-mlops-round0",
     external: true,
+    // TODO(real-cover): replace with pipeline/observability screenshot or flow
+    // diagram at /images/projects/mlops-arch.svg per handoff #3 B1 row 05.
   },
 ];
 
@@ -101,6 +113,14 @@ function FeatureCard({ project, index }: { project: typeof allProjects[number]; 
           "relative h-36 sm:h-44 bg-gradient-to-br flex items-center justify-center overflow-hidden",
           project.gradient
         )}>
+          {"backdrop" in project && project.backdrop && (
+            <img
+              src="/images/projects/backdrop.webp"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover opacity-40"
+            />
+          )}
           <span className="absolute top-3 left-4 project-num-large">
             {project.num}
           </span>
