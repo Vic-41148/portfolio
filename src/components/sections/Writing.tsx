@@ -2,7 +2,8 @@
 
 import { ArrowUpRight, Calendar } from "lucide-react";
 import Link from "next/link";
-import { Reveal, StaggerReveal, StaggerItem } from "@/components/Reveal";
+import { Reveal, StaggerReveal, StaggerItem, MaskText } from "@/components/Reveal";
+import { trackSpotlight } from "@/lib/utils";
 
 const posts = [
   {
@@ -39,7 +40,7 @@ export function Writing() {
                 <span className="motif-hash">#</span>Writing
               </p>
               <h2 className="section-heading">
-                I write to explain things simply
+                <MaskText>I write to explain things simply</MaskText>
               </h2>
             </div>
             <Link
@@ -53,12 +54,19 @@ export function Writing() {
         </Reveal>
 
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {posts.map((post) => (
+          {posts.map((post, i) => (
             <StaggerItem key={post.slug}>
               <Link
                 href={`/writing/${post.slug}`}
-                className="group block rounded-2xl border border-border bg-surface p-6 card-hover"
+                onMouseMove={trackSpotlight}
+                className="group relative block rounded-2xl border border-border bg-surface p-6 card-hover card-spotlight"
               >
+                <span
+                  aria-hidden="true"
+                  className="absolute top-5 right-6 font-mono text-xs text-text-muted/70 transition-colors group-hover:text-accent"
+                >
+                  0{i + 1}
+                </span>
                 <div className="flex items-center gap-3 text-xs text-text-muted font-mono mb-3">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />

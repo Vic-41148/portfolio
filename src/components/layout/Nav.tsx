@@ -89,7 +89,10 @@ export function Nav() {
   }, [mobileOpen]);
 
   return (
-    <header
+    <motion.header
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "fixed top-0 inset-x-0 z-50 h-16 transition-all duration-500",
         scrolled ? "glass-strong" : "bg-transparent"
@@ -252,6 +255,6 @@ export function Nav() {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   );
 }

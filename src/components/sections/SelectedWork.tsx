@@ -2,8 +2,9 @@
 
 import { ArrowUpRight, Eye, Shield, Cpu, Gamepad2, Gauge } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Reveal, StaggerReveal, StaggerItem } from "@/components/Reveal";
+import { cn, trackSpotlight } from "@/lib/utils";
+import { Reveal, MaskText } from "@/components/Reveal";
+import { Ghost } from "@/components/Ghost";
 import { motion } from "motion/react";
 
 const allProjects = [
@@ -103,29 +104,30 @@ function FeatureCard({ project, index }: { project: typeof allProjects[number]; 
     >
       <Component
         {...linkProps}
+        onMouseMove={trackSpotlight}
         className={cn(
           "group relative flex flex-col rounded-2xl border border-border overflow-hidden bg-elevated",
-          "card-hover card-feature card-accent-border h-full",
+          "card-hover card-feature card-accent-border card-spotlight h-full",
           index === 1 && "md:mt-8"
         )}
       >
         {/* Visual header area */}
-        <div className={cn(
-          "relative h-36 sm:h-44 bg-gradient-to-br flex items-center justify-center overflow-hidden",
-          project.gradient
-        )}>
-          {"backdrop" in project && project.backdrop && (
-            <img
-              src="/images/projects/backdrop.webp"
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover opacity-40"
-            />
-          )}
+        <div className="relative h-36 sm:h-44 flex items-center justify-center overflow-hidden">
+          <div className={cn("cover-zoom absolute inset-0 bg-gradient-to-br", project.gradient)}>
+            {"backdrop" in project && project.backdrop && (
+              <img
+                src="/images/projects/backdrop.webp"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover opacity-40"
+              />
+            )}
+          </div>
+          <div className="cover-sweep absolute inset-0" aria-hidden="true" />
           <span className="absolute top-3 left-4 project-num-large">
             {project.num}
           </span>
-          <div className="relative z-10 w-14 h-14 rounded-2xl bg-surface/80 backdrop-blur-sm border border-border/50 flex items-center justify-center">
+          <div className="relative z-10 w-14 h-14 rounded-2xl bg-surface/80 backdrop-blur-sm border border-border/50 flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-1">
             <project.icon className="w-7 h-7 text-accent" />
           </div>
         </div>
@@ -136,7 +138,7 @@ function FeatureCard({ project, index }: { project: typeof allProjects[number]; 
             <h3 className="text-lg sm:text-xl font-display font-semibold tracking-tight">
               {project.title}
             </h3>
-            <ArrowUpRight className="w-4 h-4 text-text-muted group-hover:text-accent transition-colors shrink-0 mt-1" />
+            <ArrowUpRight className="w-4 h-4 text-text-muted group-hover:text-accent transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 mt-1" />
           </div>
 
           <p className="mt-2 text-sm text-text-secondary leading-relaxed flex-1">
@@ -179,9 +181,10 @@ function SmallCard({ project, index }: { project: typeof allProjects[number]; in
     >
       <Component
         {...linkProps}
+        onMouseMove={trackSpotlight}
         className={cn(
           "group relative flex items-start gap-4 rounded-2xl border border-border overflow-hidden bg-surface",
-          "card-hover card-accent-border p-4 sm:p-5"
+          "card-hover card-accent-border card-spotlight p-4 sm:p-5"
         )}
       >
         <span className="project-num mt-0.5 shrink-0 w-6">{project.num}</span>
@@ -195,7 +198,7 @@ function SmallCard({ project, index }: { project: typeof allProjects[number]; in
             <h3 className="text-sm sm:text-base font-display font-semibold tracking-tight">
               {project.title}
             </h3>
-            <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-accent transition-colors shrink-0 mt-0.5" />
+            <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-accent transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 mt-0.5" />
           </div>
 
           <p className="mt-1 text-xs sm:text-sm text-text-secondary leading-relaxed line-clamp-2">
@@ -220,15 +223,16 @@ function SmallCard({ project, index }: { project: typeof allProjects[number]; in
 
 export function SelectedWork() {
   return (
-    <section id="work" className="py-24 sm:py-32">
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="work" className="py-24 sm:py-32 relative overflow-hidden">
+      <Ghost word="Work" className="right-[-1%] top-8" />
+      <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
           <div className="mb-16">
             <p className="section-eyebrow">
               <span className="motif-hash">#</span>Selected Work
             </p>
             <h2 className="section-heading">
-              Things I&apos;ve built
+              <MaskText>Things I&apos;ve built</MaskText>
             </h2>
             <p className="section-desc">
               Five projects, different stacks, one thread: shipping real

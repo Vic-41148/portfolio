@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { Send, Check, Mail, Sun, Moon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Reveal, StaggerReveal, StaggerItem } from "@/components/Reveal";
+import { cn, trackSpotlight } from "@/lib/utils";
+import { Reveal, StaggerReveal, StaggerItem, MaskText } from "@/components/Reveal";
+import { Ghost } from "@/components/Ghost";
 import { motion } from "motion/react";
 import { useTheme } from "@/lib/theme";
 
@@ -53,15 +54,16 @@ export function Contact() {
   }, [formData]);
 
   return (
-    <section id="contact" className="py-24 sm:py-32 border-t border-border">
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="contact" className="py-24 sm:py-32 border-t border-border relative overflow-hidden">
+      <Ghost word="Say hi" className="right-[-1%] top-10" />
+      <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
           <div className="mb-12">
             <p className="section-eyebrow">
               <span className="motif-hash">#</span>Contact
             </p>
             <h2 className="section-heading">
-              Let&apos;s build something
+              <MaskText>Let&apos;s build something</MaskText>
             </h2>
             <p className="section-desc">
               I&apos;m always open to interesting problems, research discussions, and
@@ -84,7 +86,7 @@ export function Contact() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   placeholder="Your name"
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-sm text-text-primary placeholder:text-text-muted transition-all focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-sm text-text-primary placeholder:text-text-muted transition-all input-glow"
                 />
                 <input
                   id="email"
@@ -96,7 +98,7 @@ export function Contact() {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="your@email.com"
-                  className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-sm text-text-primary placeholder:text-text-muted transition-all focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-sm text-text-primary placeholder:text-text-muted transition-all input-glow"
                 />
               </div>
 
@@ -110,7 +112,7 @@ export function Contact() {
                   setFormData({ ...formData, message: e.target.value })
                 }
                 placeholder="What are you working on?"
-                className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-sm text-text-primary placeholder:text-text-muted transition-all focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-sm text-text-primary placeholder:text-text-muted transition-all input-glow resize-none"
               />
 
               <motion.button
@@ -119,7 +121,7 @@ export function Contact() {
                 whileTap={{ scale: 0.98 }}
                 className={cn(
                   "inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-all",
-                  "focus-ring",
+                  "focus-ring btn-sheen",
                   state === "success"
                     ? "bg-demo-success text-demo-success-foreground"
                     : "bg-accent text-accent-foreground hover:brightness-110",
@@ -162,7 +164,8 @@ export function Contact() {
           <StaggerItem className="md:col-span-2 flex flex-col gap-4">
             <a
               href="mailto:hello@adityashibu.dev"
-              className="flex items-center gap-3 p-4 rounded-xl border border-border bg-surface hover:border-text-muted transition-all group"
+              onMouseMove={trackSpotlight}
+              className="relative card-spotlight flex items-center gap-3 p-4 rounded-xl border border-border bg-surface hover:border-text-muted transition-all group"
             >
               <Mail className="w-5 h-5 text-text-muted group-hover:text-accent transition-colors" />
               <div>
@@ -174,7 +177,8 @@ export function Contact() {
               href="https://github.com/Vic-41148"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 rounded-xl border border-border bg-surface hover:border-text-muted transition-all group"
+              onMouseMove={trackSpotlight}
+              className="relative card-spotlight flex items-center gap-3 p-4 rounded-xl border border-border bg-surface hover:border-text-muted transition-all group"
             >
               <GitHubIcon className="w-5 h-5 text-text-muted group-hover:text-text-primary transition-colors" />
               <div>
@@ -186,7 +190,8 @@ export function Contact() {
               href="https://linkedin.com/in/adityashibu"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 rounded-xl border border-border bg-surface hover:border-text-muted transition-all group"
+              onMouseMove={trackSpotlight}
+              className="relative card-spotlight flex items-center gap-3 p-4 rounded-xl border border-border bg-surface hover:border-text-muted transition-all group"
             >
               <LinkedInIcon className="w-5 h-5 text-text-muted group-hover:text-text-primary transition-colors" />
               <div>
