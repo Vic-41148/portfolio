@@ -7,8 +7,26 @@ import Link from "next/link";
 export function Hero() {
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden">
+      {/* Generated ambient gradient texture, low opacity so it enhances rather than replaces the CSS gradient */}
+      <img
+        src="/images/textures/hero-gradient.webp"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen pointer-events-none select-none"
+      />
+      {/* Signature scanline motif, very restrained */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-[0.05] bg-repeat"
+        style={{ backgroundImage: "url(/images/textures/scanline.png)", backgroundSize: "512px 512px" }}
+      />
       {/* Dense ambient gradient background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,var(--accent-muted)_0%,transparent_60%),radial-gradient(ellipse_40%_30%_at_80%_30%,color-mix(in_srgb,var(--accent)_6%,transparent)_0%,transparent_50%),radial-gradient(ellipse_30%_40%_at_20%_70%,color-mix(in_srgb,var(--accent)_4%,transparent)_0%,transparent_50%)]" />
+      {/* Soft accent glow behind the name */}
+      <div
+        aria-hidden="true"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[20rem] rounded-full bg-accent/10 blur-[100px] pointer-events-none"
+      />
 
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <motion.p

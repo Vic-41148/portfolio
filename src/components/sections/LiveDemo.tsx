@@ -11,9 +11,14 @@ export function LiveDemo() {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    <section id="demo" className="py-24 sm:py-32 border-t border-border relative">
-      {/* Subtle accent glow behind the demo section */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_40%_at_50%_30%,var(--accent-muted)_0%,transparent_60%)]" />
+    <section id="demo" className="py-24 sm:py-32 border-t border-border relative overflow-hidden">
+      {/* This is the loud cyan moment — the rest of the site keeps accent scarce, this section commits */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_55%_at_50%_25%,var(--accent-muted)_0%,transparent_65%)]" />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-[0.04] bg-repeat"
+        style={{ backgroundImage: "url(/images/textures/scanline.png)", backgroundSize: "512px 512px" }}
+      />
 
       <div className="mx-auto max-w-6xl px-6 relative z-10">
         <Reveal>
@@ -42,7 +47,7 @@ export function LiveDemo() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="rounded-2xl border border-border/60 bg-surface overflow-hidden shadow-sm"
+          className="rounded-2xl border border-accent/25 bg-surface overflow-hidden glow-accent"
         >
           <TeachDemo />
         </motion.div>
