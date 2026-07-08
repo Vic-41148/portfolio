@@ -87,9 +87,9 @@ function knnPredict(
 const CLASS_COLORS = ["#22D3EE", "#22D68C", "#F5A623", "#FF6B6B", "#A78BFA"];
 
 const STEPS = [
-  { icon: Hand, label: "Show a hand gesture", desc: "Hold up a peace sign, a fist, anything" },
-  { icon: Lightbulb, label: "Teach it the name", desc: "Name the gesture and capture samples" },
-  { icon: Sparkles, label: "It learns in seconds", desc: "KNN trains instantly on-device" },
+  { icon: Hand, label: "Show a gesture" },
+  { icon: Lightbulb, label: "Teach it the name" },
+  { icon: Sparkles, label: "It learns instantly" },
 ];
 
 export function TeachDemo() {
@@ -400,23 +400,20 @@ export function TeachDemo() {
               to tell them apart — live, in your browser, in seconds.
             </p>
 
-            {/* How it works — 3 steps */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-2xl w-full">
+            {/* How it works — 3 steps, icon + short label only */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-10 max-w-2xl w-full">
               {STEPS.map((step, i) => (
                 <motion.div
                   key={step.label}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
-                  className="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2 p-3 rounded-xl bg-elevated/60 border border-border"
+                  className="flex flex-col items-center gap-2.5 px-5 py-4 rounded-xl bg-elevated/60 border border-border min-w-[9rem]"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-accent-muted flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-lg bg-accent-muted flex items-center justify-center">
                     <step.icon className="w-4 h-4 text-accent" />
                   </div>
-                  <div className="sm:text-center text-left">
-                    <p className="text-xs font-medium text-text-primary">{step.label}</p>
-                    <p className="text-[11px] text-text-muted mt-0.5">{step.desc}</p>
-                  </div>
+                  <p className="text-xs font-medium text-text-primary text-center">{step.label}</p>
                 </motion.div>
               ))}
             </div>
@@ -476,7 +473,7 @@ export function TeachDemo() {
                     <span className="text-xs text-text-secondary">Live</span>
                   </div>
 
-                  <div className="px-3 py-1.5 rounded-full glass-strong flex items-center gap-2">
+                  <div className="px-3 py-1.5 rounded-full glass-strong flex items-center gap-2 border border-accent/40 glow-accent">
                     <Trophy className="w-3.5 h-3.5 text-accent" />
                     <span className="text-sm font-medium text-accent">
                       {prediction.label}
