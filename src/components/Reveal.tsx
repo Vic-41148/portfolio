@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "motion/react";
-import { type ReactNode } from "react";
+import { motion, useInView } from "motion/react";
+import { useRef, type ReactNode } from "react";
 
 interface RevealProps {
   children: ReactNode;
@@ -60,13 +60,16 @@ export function StaggerReveal({
 export function StaggerItem({
   children,
   className,
+  onMouseMove,
 }: {
   children: ReactNode;
   className?: string;
+  onMouseMove?: React.MouseEventHandler<HTMLDivElement>;
 }) {
   return (
     <motion.div
       className={className}
+      onMouseMove={onMouseMove}
       variants={{
         hidden: { opacity: 0, y: 16 },
         visible: {
@@ -81,5 +84,38 @@ export function StaggerItem({
     >
       {children}
     </motion.div>
+  );
+}
+
+/* Editorial line reveal: text rises out of a clipped wrapper. Use inside headings.
+ * Observes the outer wrapper, not the moving span — the translated span starts
+ * fully clipped, and IntersectionObserver treats clipped elements as never
+ * intersecting, which would deadlock a whileInView on the span itself. */
+export function MaskText({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <span
+      ref={ref}
+      className={`block overflow-hidden pb-[0.1em] -mb-[0.1em] ${className ?? ""}`}
+    >
+      <motion.span
+        className="block"
+        initial={{ y: "112%" }}
+        animate={inView ? { y: "0%" } : undefined}
+        transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {children}
+      </motion.span>
+    </span>
   );
 }
