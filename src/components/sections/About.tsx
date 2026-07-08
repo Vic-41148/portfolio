@@ -48,14 +48,14 @@ export function About() {
     <section id="about" className="py-24 sm:py-32 border-t border-border">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal>
-          <div className="mb-12">
+          <div className="mb-12 md:text-right md:ml-auto md:max-w-xl">
             <p className="section-eyebrow">
               <span className="motif-hash">#</span>About
             </p>
             <h2 className="section-heading">
               Who I am
             </h2>
-            <p className="section-desc">
+            <p className="section-desc md:ml-auto">
               C++ and systems first, then ML. Now I build computer vision that
               runs on-device — in the browser, at the edge, without the server.
             </p>
@@ -63,7 +63,7 @@ export function About() {
         </Reveal>
 
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-6 gap-4">
-          <StaggerItem className="md:col-span-2 md:row-span-2 rounded-2xl overflow-hidden border border-border bg-surface">
+          <StaggerItem className="md:col-span-2 md:row-span-2 rounded-2xl overflow-hidden border border-border bg-surface md:-translate-y-4">
             <div className="aspect-[3/4] relative overflow-hidden">
               <img
                 src="/images/me/headshot.jpg"

@@ -33,8 +33,8 @@ export function Writing() {
     <section id="writing" className="py-24 sm:py-32 border-t border-border">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal>
-          <div className="mb-12 flex items-end justify-between">
-            <div>
+          <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-2xl">
               <p className="section-eyebrow">
                 <span className="motif-hash">#</span>Writing
               </p>
@@ -44,7 +44,7 @@ export function Writing() {
             </div>
             <Link
               href="/writing"
-              className="hidden sm:flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary transition-colors"
+              className="hidden sm:flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary transition-colors shrink-0"
             >
               View all
               <ArrowUpRight className="w-3.5 h-3.5" />

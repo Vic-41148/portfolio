@@ -104,8 +104,9 @@ function FeatureCard({ project, index }: { project: typeof allProjects[number]; 
       <Component
         {...linkProps}
         className={cn(
-          "group relative flex flex-col rounded-2xl border border-border overflow-hidden",
-          "card-hover card-accent-border h-full"
+          "group relative flex flex-col rounded-2xl border border-border overflow-hidden bg-elevated",
+          "card-hover card-feature card-accent-border h-full",
+          index === 1 && "md:mt-8"
         )}
       >
         {/* Visual header area */}
@@ -179,7 +180,7 @@ function SmallCard({ project, index }: { project: typeof allProjects[number]; in
       <Component
         {...linkProps}
         className={cn(
-          "group relative flex items-start gap-4 rounded-2xl border border-border overflow-hidden",
+          "group relative flex items-start gap-4 rounded-2xl border border-border overflow-hidden bg-surface",
           "card-hover card-accent-border p-4 sm:p-5"
         )}
       >
