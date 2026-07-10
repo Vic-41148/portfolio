@@ -1,141 +1,172 @@
 "use client";
 
-import { ArrowUpRight, Eye, Shield, Cpu, Gamepad2, Gauge } from "lucide-react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
+import { ArrowUpRight, Eye, Shield, Cpu, Gamepad2, Gauge, Flame, Check } from "lucide-react";
 import Link from "next/link";
 import { cn, trackSpotlight } from "@/lib/utils";
 import { Reveal, MaskText } from "@/components/Reveal";
 import { Ghost } from "@/components/Ghost";
-import { motion } from "motion/react";
+import { motion, useInView } from "motion/react";
+import { useShortlist } from "@/lib/shortlist";
+import { useDragScroll } from "@/lib/use-drag-scroll";
+
+const STOP_MOTION_FRAMES = [Cpu, Shield, Gamepad2, Gauge] as const;
+
+/** Stop-motion stand-in: on first scroll-into-view, the icon jump-cuts
+ *  through a few frames — no easing, discrete steps — before settling on
+ *  the real one. Runs once. */
+function StopMotionIcon({ FinalIcon }: { FinalIcon: ComponentType<{ className?: string }> }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [frame, setFrame] = useState(-1);
+
+  useEffect(() => {
+    if (!inView) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let i = 0;
+    const id = setInterval(() => {
+      i++;
+      if (i >= STOP_MOTION_FRAMES.length) {
+        clearInterval(id);
+        setFrame(STOP_MOTION_FRAMES.length);
+        return;
+      }
+      setFrame(i);
+    }, 90);
+    return () => clearInterval(id);
+  }, [inView]);
+
+  const Current = frame >= 0 && frame < STOP_MOTION_FRAMES.length ? STOP_MOTION_FRAMES[frame] : FinalIcon;
+
+  return (
+    <span ref={ref}>
+      <Current className="w-7 h-7 text-accent" />
+    </span>
+  );
+}
 
 const allProjects = [
   {
     num: "01",
     slug: "webcam-transfer-learning",
     title: "Teach My Page to See",
-    description: "Real-time computer vision on your webcam, fully in-browser — show it two gestures, it learns them in seconds. On-device, nothing uploaded.",
-    shortDesc: "In-browser CV that learns from your webcam",
+    description: "Real-time computer vision on your webcam, fully in-browser — show it two gestures, it learns them in seconds flat. On-device. Nothing uploaded, nothing to trust me on.",
     icon: Eye,
     chips: ["MediaPipe", "TensorFlow.js", "WebGPU"],
-    gradient: "from-accent/20 via-accent/5 to-transparent",
+    tint: "bg-accent/15",
     href: "#demo",
     external: false,
     feature: true,
+    difficulty: 3,
   },
   {
     num: "02",
     slug: "secure-llm-inference-platform",
     title: "Secure LLM Inference & Eval Platform",
-    description: "Stress-tests LLMs against prompt-injection and jailbreak attacks, adds layered defenses, and measures how well they hold up.",
-    shortDesc: "Systematic LLM security evaluation framework",
+    description: "Throws prompt-injection and jailbreak attacks at LLMs until something breaks, then layers in defenses and measures — with numbers, not vibes — how well they actually hold.",
     icon: Shield,
     chips: ["Python", "Evals"],
-    gradient: "from-demo-success/20 via-demo-success/5 to-transparent",
+    tint: "bg-demo-success/15",
     href: "https://github.com/Vic-41148/secure-llm-inference-platform",
     external: true,
-    meta: "\u26055 · 4 forks",
-    feature: true,
-    // TODO(real-cover): replace backdrop.webp fallback with a real architecture
-    // diagram (attack -> defense -> eval flow) at /images/projects/secure-llm-arch.svg
-    // per handoff #3 B1 row 02. Do not fabricate a screenshot.
-    backdrop: true,
+    meta: "★5 · 4 forks",
+    // TODO(real-cover): add a real architecture diagram (attack -> defense ->
+    // eval flow) at /images/projects/secure-llm-arch.svg per handoff #3 B1
+    // row 02. Do not fabricate a screenshot.
+    difficulty: 4,
   },
   {
     num: "03",
     slug: "codeshield",
     title: "CodeShield",
-    description: "A real-time distributed log anomaly-detection engine in C — concurrent log streams, a 5-minute sliding window, security anomalies flagged as they happen. Built for IBM ThinkFest 2026.",
-    shortDesc: "Real-time log anomaly engine in C",
+    description: "A real-time distributed log anomaly-detection engine, written in raw C because I like pain — concurrent log streams, a 5-minute sliding window, anomalies flagged the moment they happen. Built for IBM ThinkFest 2026.",
     icon: Cpu,
     chips: ["C", "Systems"],
-    gradient: "from-demo-warning/15 to-transparent",
+    tint: "bg-demo-warning/12",
     href: "https://github.com/Vic-41148/CodeShield-Distributed-Log-Anomaly-Detection-Engine",
     external: true,
     meta: "ThinkFest 2026",
     // TODO(real-cover): replace with real architecture diagram (concurrent streams ->
     // 5-min sliding window -> anomaly flag) or terminal capture at
     // /images/projects/codeshield-arch.svg per handoff #3 B1 row 03.
+    difficulty: 5,
   },
   {
     num: "04",
     slug: "game-boy-emulator",
     title: "Game Boy Emulator",
-    description: "A Game Boy emulator written from scratch in C++ — CPU, PPU, APU, running real ROMs. The project that taught me how hardware actually works.",
-    shortDesc: "CPU-to-APU emulator from scratch in C++",
+    description: "A Game Boy emulator from scratch in C++ — CPU, PPU, APU, real ROMs actually booting. No tutorial holds your hand through the PPU timing; you fight it out yourself.",
     icon: Gamepad2,
     chips: ["C++"],
-    gradient: "from-accent/10 to-transparent",
+    tint: "bg-accent/10",
     href: "https://github.com/Vic-41148/lint-game-boy-emu",
     external: true,
     // TODO(real-cover): replace with a real screenshot of a game running in the
     // emulator at /images/projects/emulator-shot.png per handoff #3 B1 row 04 —
     // the standout asset, get this one done first.
+    difficulty: 5,
   },
   {
     num: "05",
     slug: "primetrade-mlops",
     title: "primetrade-mlops-round0",
     description: "An MLOps batch pipeline: rolling-signal generation, containerized with Docker and wired for structured observability.",
-    shortDesc: "MLOps batch pipeline with Docker",
     icon: Gauge,
     chips: ["Python", "Docker", "MLOps"],
-    gradient: "from-accent/10 to-transparent",
+    tint: "bg-accent/10",
     href: "https://github.com/Vic-41148/primetrade-mlops-round0",
     external: true,
     // TODO(real-cover): replace with pipeline/observability screenshot or flow
     // diagram at /images/projects/mlops-arch.svg per handoff #3 B1 row 05.
+    difficulty: 2,
   },
 ];
 
-const featureProjects = allProjects.filter((p) => p.feature);
-const smallProjects = allProjects.filter((p) => !p.feature);
-
-function FeatureCard({ project, index }: { project: typeof allProjects[number]; index: number }) {
+function ProductCard({ project, index }: { project: typeof allProjects[number]; index: number }) {
   const Component = project.external ? "a" : Link;
   const linkProps = project.external
     ? { href: project.href, target: "_blank", rel: "noopener noreferrer" as const }
     : { href: project.href };
+  const isSignature = index === 0;
+  const { add, has } = useShortlist();
+  const shortlisted = has(project.slug);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.5, delay: index * 0.12, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
+      className="slider-item w-[19rem] sm:w-[22rem]"
     >
       <Component
         {...linkProps}
         onMouseMove={trackSpotlight}
         className={cn(
-          "group relative flex flex-col rounded-2xl border border-border overflow-hidden bg-elevated",
-          "card-hover card-feature card-accent-border card-spotlight h-full",
-          index === 1 && "md:mt-8"
+          "group relative flex flex-col rounded-2xl border border-border overflow-hidden bg-elevated h-full",
+          "card-hover card-feature card-accent-border card-spotlight"
         )}
       >
-        {/* Visual header area */}
-        <div className="relative h-36 sm:h-44 flex items-center justify-center overflow-hidden">
-          <div className={cn("cover-zoom absolute inset-0 bg-gradient-to-br", project.gradient)}>
-            {"backdrop" in project && project.backdrop && (
-              <img
-                src="/images/projects/backdrop.webp"
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover opacity-40"
-              />
-            )}
-          </div>
+        {/* Visual header area — the "product shot" */}
+        <div className="relative h-44 sm:h-52 flex items-center justify-center overflow-hidden">
+          <div className={cn("cover-zoom absolute inset-0", project.tint)} />
           <div className="cover-sweep absolute inset-0" aria-hidden="true" />
           <span className="absolute top-3 left-4 project-num-large">
             {project.num}
           </span>
           <div className="relative z-10 w-14 h-14 rounded-2xl bg-surface/80 backdrop-blur-sm border border-border/50 flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-1">
-            <project.icon className="w-7 h-7 text-accent" />
+            {isSignature ? (
+              <StopMotionIcon FinalIcon={project.icon} />
+            ) : (
+              <project.icon className="w-7 h-7 text-accent" />
+            )}
           </div>
         </div>
 
         {/* Content */}
         <div className="relative z-10 flex-1 flex flex-col p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
-            <h3 className="text-lg sm:text-xl font-display font-semibold tracking-tight">
+            <h3 className="text-lg font-display font-normal">
               {project.title}
             </h3>
             <ArrowUpRight className="w-4 h-4 text-text-muted group-hover:text-accent transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 mt-1" />
@@ -145,7 +176,19 @@ function FeatureCard({ project, index }: { project: typeof allProjects[number]; 
             {project.description}
           </p>
 
-          <div className="flex flex-wrap items-center gap-2 mt-4">
+          <div className="flex items-center gap-1 mt-4 font-mono text-[11px] uppercase tracking-wider text-text-muted">
+            Difficulty
+            <span className="flex gap-0.5 ml-1" aria-label={`${project.difficulty} out of 5`}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Flame
+                  key={n}
+                  className={cn("w-3 h-3", n <= project.difficulty ? "text-accent fill-accent" : "text-text-muted/30")}
+                />
+              ))}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 mt-3">
             {project.chips.map((chip) => (
               <span
                 key={chip}
@@ -154,112 +197,82 @@ function FeatureCard({ project, index }: { project: typeof allProjects[number]; 
                 {chip}
               </span>
             ))}
-            {project.meta && (
+            {"meta" in project && project.meta && (
               <span className="text-[11px] font-mono text-accent ml-1">
                 {project.meta}
               </span>
             )}
           </div>
         </div>
-      </Component>
-    </motion.div>
-  );
-}
 
-function SmallCard({ project, index }: { project: typeof allProjects[number]; index: number }) {
-  const Component = project.external ? "a" : Link;
-  const linkProps = project.external
-    ? { href: project.href, target: "_blank", rel: "noopener noreferrer" as const }
-    : { href: project.href };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.4, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
-    >
-      <Component
-        {...linkProps}
-        onMouseMove={trackSpotlight}
-        className={cn(
-          "group relative flex items-start gap-4 rounded-2xl border border-border overflow-hidden bg-surface",
-          "card-hover card-accent-border card-spotlight p-4 sm:p-5"
-        )}
-      >
-        <span className="project-num mt-0.5 shrink-0 w-6">{project.num}</span>
-
-        <div className="w-9 h-9 rounded-lg bg-surface border border-border flex items-center justify-center shrink-0">
-          <project.icon className="w-[18px] h-[18px] text-accent" />
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="text-sm sm:text-base font-display font-semibold tracking-tight">
-              {project.title}
-            </h3>
-            <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-accent transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 mt-0.5" />
-          </div>
-
-          <p className="mt-1 text-xs sm:text-sm text-text-secondary leading-relaxed line-clamp-2">
-            {project.shortDesc}
-          </p>
-
-          <div className="flex flex-wrap items-center gap-1.5 mt-2">
-            {project.chips.map((chip) => (
-              <span
-                key={chip}
-                className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-elevated border border-border text-text-muted"
-              >
-                {chip}
-              </span>
-            ))}
-          </div>
-        </div>
+        <motion.button
+          onClick={(e) => {
+            e.preventDefault();
+            add({ slug: project.slug, title: project.title, href: project.href });
+          }}
+          disabled={shortlisted}
+          whileHover={shortlisted ? undefined : { scale: 1.04 }}
+          whileTap={shortlisted ? undefined : { scale: 0.94 }}
+          transition={{ type: "spring", stiffness: 500, damping: 22 }}
+          className={cn(
+            "relative z-20 m-5 mt-0 sm:m-6 sm:mt-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider",
+            shortlisted ? "bg-demo-success text-demo-success-foreground" : "bg-text-primary text-bg hover:bg-accent hover:text-accent-foreground"
+          )}
+        >
+          {shortlisted ? (
+            <>
+              Shortlisted <Check className="w-3.5 h-3.5" />
+            </>
+          ) : (
+            "Add to shortlist"
+          )}
+        </motion.button>
       </Component>
     </motion.div>
   );
 }
 
 export function SelectedWork() {
+  const sliderRef = useDragScroll<HTMLDivElement>({ loop: true });
+
   return (
     <section id="work" className="py-24 sm:py-32 relative overflow-hidden">
       <Ghost word="Work" className="right-[-1%] top-8" />
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
-          <div className="mb-16">
-            <p className="section-eyebrow">
-              <span className="motif-hash">#</span>Selected Work
-            </p>
-            <h2 className="section-heading">
-              <MaskText>Things I&apos;ve built</MaskText>
-            </h2>
-            <p className="section-desc">
-              Five projects, different stacks, one thread: shipping real
-              things that work at the edge.
-            </p>
+          <div className="mb-16 flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-xl">
+              <p className="section-eyebrow">
+                <span className="motif-bracket" />Choose your stack
+              </p>
+              <h2 className="section-heading">
+                <MaskText>Things I actually shipped</MaskText>
+              </h2>
+              <p className="section-desc">
+                Five projects, five different stacks, zero tutorials followed
+                to the letter. If it runs at the edge and doesn&apos;t need a
+                server to feel alive, it&apos;s probably mine.
+              </p>
+            </div>
+            <span className="hidden sm:block text-xs font-mono text-text-muted tracking-wider uppercase">
+              &larr; scroll &rarr;
+            </span>
           </div>
         </Reveal>
+      </div>
 
-        {/* Feature cards: 2-column row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-          {featureProjects.map((project, index) => (
-            <FeatureCard key={project.slug} project={project} index={index} />
-          ))}
+      {/* Product-style horizontal slider — grab-to-fling on desktop, native
+          swipe on touch, loops forever. Content renders three times so the
+          drag can wrap seamlessly; the signature tilt-3D card exists in
+          every copy so whichever one is on screen still carries it. */}
+      <div className="relative mx-auto max-w-[100rem] px-6">
+        <div ref={sliderRef} className="slider-row">
+          {[0, 1, 2].map((copyIndex) =>
+            allProjects.map((project, index) => (
+              <ProductCard key={`${copyIndex}-${project.slug}`} project={project} index={index} />
+            ))
+          )}
         </div>
-
-        {/* Small cards: 3-column row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {smallProjects.map((project, index) => (
-            <SmallCard key={project.slug} project={project} index={index} />
-          ))}
-        </div>
-
-        <Reveal delay={0.3}>
-          <div className="motif-divider mt-16">
-            <span>more</span>
-          </div>
-        </Reveal>
       </div>
     </section>
   );

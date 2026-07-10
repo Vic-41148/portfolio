@@ -1,31 +1,28 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import localFont from "next/font/local";
+import { Anton, DM_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ThemeProvider } from "@/lib/theme";
+import { ShortlistProvider } from "@/lib/shortlist";
+import { ShortlistDrawer } from "@/components/ShortlistDrawer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const displayFont = Anton({
+  weight: "400",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const cabinetGrotesk = localFont({
-  src: [
-    {
-      path: "../../public/fonts/CabinetGrotesk-Variable.woff2",
-      weight: "100 900",
-    },
-  ],
   variable: "--font-display",
-  display: "swap",
+});
+
+const sansFont = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+});
+
+const monoFont = Space_Mono({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
@@ -34,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s — Aditya Shibu",
   },
   description:
-    "ML & Systems Engineer. I build machine learning that runs on-device — computer vision in your browser, models packaged to ship. C++, systems, and going deep on CV.",
+    "ML & Systems Engineer. I write models that run on-device — computer vision in your browser, no server required. Came up through C++ and systems, going all-in on CV.",
   metadataBase: new URL("https://adityashibu.dev"),
   openGraph: {
     type: "website",
@@ -60,16 +57,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${cabinetGrotesk.variable} h-full antialiased dark`}
+      className={`${sansFont.variable} ${monoFont.variable} ${displayFont.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
       <body className="min-h-full bg-bg text-text-primary font-sans noise-overlay">
         <ThemeProvider>
-          <SmoothScroll>
-            <Nav />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </SmoothScroll>
+          <ShortlistProvider>
+            <SmoothScroll>
+              <Nav />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </SmoothScroll>
+            <ShortlistDrawer />
+          </ShortlistProvider>
         </ThemeProvider>
       </body>
     </html>

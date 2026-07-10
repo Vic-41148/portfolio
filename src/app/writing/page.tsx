@@ -46,7 +46,7 @@ export default function WritingPage() {
           Back home
         </Link>
 
-        <h1 className="text-4xl sm:text-5xl font-display font-bold tracking-tight mb-3">
+        <h1 className="text-4xl sm:text-5xl font-display font-normal mb-3">
           Writing
         </h1>
         <p className="text-lg text-text-secondary mb-16 max-w-xl">
@@ -79,7 +79,7 @@ export default function WritingPage() {
 
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-lg font-display font-semibold tracking-tight group-hover:text-accent transition-colors">
+                  <h2 className="text-lg font-display font-normal group-hover:text-accent transition-colors">
                     {post.title}
                   </h2>
                   <p className="mt-1.5 text-sm text-text-secondary leading-relaxed">

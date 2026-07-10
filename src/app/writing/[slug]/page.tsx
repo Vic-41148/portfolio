@@ -141,7 +141,7 @@ export default async function WritingPostPage({ params }: { params: Promise<{ sl
         </Link>
 
         <header className="mb-12">
-          <h1 className="text-3xl sm:text-4xl font-display font-bold tracking-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl font-display font-normal mb-4">
             {post.title}
           </h1>
           <div className="flex items-center gap-3 text-sm text-text-muted font-mono">
@@ -157,7 +157,7 @@ export default async function WritingPostPage({ params }: { params: Promise<{ sl
           {paragraphs.map((para, i) => {
             if (para.startsWith("## ")) {
               return (
-                <h2 key={i} className="text-xl font-display font-semibold tracking-tight mt-10 mb-4">
+                <h2 key={i} className="text-xl font-display font-normal mt-10 mb-4">
                   {para.replace("## ", "")}
                 </h2>
               );

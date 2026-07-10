@@ -37,10 +37,10 @@ export function Writing() {
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-2xl">
               <p className="section-eyebrow">
-                <span className="motif-hash">#</span>Writing
+                <span className="motif-bracket" />Writing
               </p>
               <h2 className="section-heading">
-                <MaskText>I write to explain things simply</MaskText>
+                <MaskText>Things I learned the hard way</MaskText>
               </h2>
             </div>
             <Link
@@ -75,7 +75,7 @@ export function Writing() {
                   <span>{post.readTime}</span>
                 </div>
 
-                <h3 className="text-lg font-display font-semibold tracking-tight mb-2 group-hover:text-accent transition-colors">
+                <h3 className="text-lg font-display font-normal mb-2 group-hover:text-accent transition-colors">
                   {post.title}
                 </h3>
 
