@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Sun, Moon, Menu, X, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/lib/use-scroll";
 import { useTheme } from "@/lib/theme";
+import { useShortlist } from "@/lib/shortlist";
 import { motion, AnimatePresence } from "motion/react";
 import Lenis from "lenis";
 
@@ -52,6 +53,7 @@ export function Nav() {
   const pathname = usePathname();
   const scrolled = useScroll(20);
   const { theme, toggle } = useTheme();
+  const { items, open: openShortlist } = useShortlist();
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -94,8 +96,8 @@ export function Nav() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "fixed top-0 inset-x-0 z-50 h-16 transition-all duration-500",
-        scrolled ? "glass-strong" : "bg-transparent"
+        "fixed top-0 inset-x-0 z-50 h-16 glass-strong transition-shadow duration-500",
+        scrolled && "shadow-lg"
       )}
     >
       <div className="mx-auto h-full max-w-6xl px-6 flex items-center justify-between">
@@ -149,7 +151,7 @@ export function Nav() {
               <GitHubIcon className="w-4 h-4" />
             </a>
             <a
-              href="https://linkedin.com/in/adityashibu"
+              href="https://linkedin.com/in/adityashibu41148"
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-muted hover:text-text-primary transition-colors focus-ring rounded-sm"
@@ -158,6 +160,15 @@ export function Nav() {
               <LinkedInIcon className="w-4 h-4" />
             </a>
           </div>
+
+          <button
+            onClick={openShortlist}
+            className="btn-lift inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-xs font-bold uppercase tracking-wider transition-all hover:brightness-110 focus-ring"
+            aria-label="Open project shortlist"
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            Shortlist ({items.length})
+          </button>
 
           {/* Mobile hamburger */}
           <button
@@ -210,7 +221,7 @@ export function Nav() {
                         if (isHash) { e.preventDefault(); }
                         handleNavClick(link.href);
                       }}
-                      className="text-lg font-display font-semibold tracking-tight py-3 px-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-elevated transition-colors"
+                      className="text-lg font-display font-normal py-3 px-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-elevated transition-colors"
                     >
                       {link.label}
                     </Component>
@@ -240,7 +251,7 @@ export function Nav() {
                     <GitHubIcon className="w-5 h-5" />
                   </a>
                   <a
-                    href="https://linkedin.com/in/adityashibu"
+                    href="https://linkedin.com/in/adityashibu41148"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-text-muted hover:text-text-primary transition-colors"

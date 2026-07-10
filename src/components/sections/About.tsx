@@ -1,6 +1,7 @@
 "use client";
 
 import { Cpu, GraduationCap, Gamepad2, BookOpen, Code2, Globe } from "lucide-react";
+import Image from "next/image";
 import { Reveal, StaggerReveal, StaggerItem, MaskText } from "@/components/Reveal";
 import { Ghost } from "@/components/Ghost";
 import { trackSpotlight } from "@/lib/utils";
@@ -9,25 +10,25 @@ const tiles = [
   {
     title: "Bio",
     content:
-      "I started in C++ and systems programming — emulators, a real-time anomaly-detection engine, low-level things. Machine learning pulled me in and stuck, so now I build ML that actually runs: on-device, in the browser, at the edge. I'm going deep on computer vision while keeping one foot in the systems world that got me here.",
+      "Started in C++ writing low-level things nobody sees — emulators, a real-time anomaly-detection engine. Then ML got its hooks in me and didn't let go. Now I build models that actually run where you are: on-device, in the browser, no server standing between us. Computer vision is the deep end and I'm still swimming down.",
     icon: Cpu,
     span: "md:col-span-3 md:row-span-2",
   },
   {
     title: "Currently Learning",
-    content: "PyTorch from scratch · CNNs · RAG + LangGraph · MLOps",
+    content: "PyTorch from scratch · CNNs · RAG + LangGraph · MLOps — nothing here is a checkbox",
     icon: GraduationCap,
     span: "md:col-span-3",
   },
   {
     title: "Stack",
-    content: "Python · PyTorch · C++ · TypeScript · FastAPI · Docker · Linux",
+    content: "Python · PyTorch · C++ · TypeScript · FastAPI · Docker · Linux — no drag-and-drop, no low-code",
     icon: Code2,
     span: "md:col-span-2",
   },
   {
     title: "Fun",
-    content: "I build Game Boy emulators for fun and daily-drive Arch. Currently poking at a Godot platformer.",
+    content: "I build Game Boy emulators for fun and daily-drive Arch, because apparently things need to be hard on purpose. Currently breaking a Godot platformer.",
     icon: Gamepad2,
     span: "md:col-span-2",
   },
@@ -39,7 +40,7 @@ const tiles = [
   },
   {
     title: "Location",
-    content: "Bangalore, India · remote · open to relocating",
+    content: "Bangalore, India · remote · will relocate for the right kind of trouble",
     icon: Globe,
     span: "md:col-span-2",
   },
@@ -53,14 +54,15 @@ export function About() {
         <Reveal>
           <div className="mb-12 md:text-right md:ml-auto md:max-w-xl">
             <p className="section-eyebrow">
-              <span className="motif-hash">#</span>About
+              <span className="motif-bracket" />Engineer No. 001
             </p>
             <h2 className="section-heading">
-              <MaskText>Who I am</MaskText>
+              <MaskText>Not your average ML hire</MaskText>
             </h2>
             <p className="section-desc md:ml-auto">
-              C++ and systems first, then ML. Now I build computer vision that
-              runs on-device — in the browser, at the edge, without the server.
+              C++ and systems first, then ML — in that order, on purpose. I build
+              computer vision that runs on-device: in the browser, at the edge,
+              with nothing phoning home to a server.
             </p>
           </div>
         </Reveal>
@@ -68,11 +70,12 @@ export function About() {
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <StaggerItem className="group md:col-span-2 md:row-span-2 rounded-2xl overflow-hidden border border-border bg-surface md:-translate-y-4">
             <div className="aspect-[3/4] relative overflow-hidden">
-              <img
-                src="/images/me/headshot.jpg"
+              <Image
+                src="/images/me/headshot.webp"
                 alt="Aditya Shibu"
-                className="absolute inset-0 w-full h-full object-cover grayscale-[0.35] transition-all duration-700 group-hover:grayscale-0 group-hover:scale-[1.03]"
-                loading="lazy"
+                fill
+                sizes="(min-width: 768px) 33vw, 100vw"
+                className="object-cover object-[55%_center] transition-all duration-700 group-hover:scale-[1.03]"
               />
             </div>
           </StaggerItem>

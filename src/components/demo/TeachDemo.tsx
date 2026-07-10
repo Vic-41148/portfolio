@@ -116,6 +116,12 @@ export function TeachDemo() {
     setLoading(true);
     setError(null);
 
+    // Release any previous stream so the hardware isn't locked
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+
     try {
       const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
@@ -154,19 +160,36 @@ export function TeachDemo() {
         audio: false,
       });
 
+      // Store stream in ref — a useEffect below attaches it to the <video>
+      // element once it mounts (it's conditionally rendered on cameraActive).
       streamRef.current = mediaStream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
 
       setCameraActive(true);
       setLoading(false);
     } catch (err) {
       console.error("Camera/model init error:", err);
-      setError(err instanceof Error ? err.message : "Failed to initialize");
+      const msg = err instanceof Error ? err.message : "Failed to initialize";
+      if (msg.includes("NotReadableError") || msg.includes("Could not start video source")) {
+        setError("Camera is in use by another app or tab. Close it and try again.");
+      } else {
+        setError(msg);
+      }
       setLoading(false);
     }
   }, []);
+
+  // Attach the media stream to the <video> element once it mounts.
+  // The video is conditionally rendered (only when cameraActive), so
+  // videoRef.current is null when startCamera runs. This effect bridges
+  // the gap: it fires after React commits the video element to the DOM.
+  useEffect(() => {
+    if (!cameraActive || !streamRef.current) return;
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.srcObject !== streamRef.current) {
+      video.srcObject = streamRef.current;
+    }
+  }, [cameraActive]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -261,6 +284,36 @@ export function TeachDemo() {
     setShowControls(true);
   }, []);
 
+  // Always-on preview: draws raw video to canvas as soon as camera is active.
+  // Runs independently of training so the feed is never a black hole.
+  useEffect(() => {
+    if (!cameraActive || !modelLoaded || isTrained) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let frameId: number;
+    const previewFrame = () => {
+      if (video.readyState >= 2 && video.videoWidth > 0) {
+        // Only resize canvas when dimensions change — resizing clears the buffer
+        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      }
+      frameId = requestAnimationFrame(previewFrame);
+    };
+
+    frameId = requestAnimationFrame(previewFrame);
+    return () => cancelAnimationFrame(frameId);
+  }, [cameraActive, modelLoaded, isTrained]);
+
+  // Classify loop: draws video + hand landmarks + runs KNN when model is trained.
   useEffect(() => {
     if (!cameraActive || !modelLoaded || !isTrained) return;
 
@@ -313,13 +366,11 @@ export function TeachDemo() {
             ctx.fill();
           }
 
-          if (isTrained && Date.now() - lastClassifyRef.current > 100) {
+          if (Date.now() - lastClassifyRef.current > 100) {
             const features = normalizeLandmarks(landmarks);
             if (features.length > 0) {
               const pred = knnPredict(features, gestureClasses);
-              if (pred) {
-                setPrediction(pred);
-              }
+              if (pred) setPrediction(pred);
             }
             lastClassifyRef.current = Date.now();
           }
@@ -334,9 +385,7 @@ export function TeachDemo() {
     animFrameRef.current = requestAnimationFrame(classifyFrame);
 
     return () => {
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current);
-      }
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, [cameraActive, modelLoaded, isTrained, gestureClasses]);
 
@@ -347,7 +396,7 @@ export function TeachDemo() {
         <div className="w-16 h-16 rounded-2xl bg-demo-warning/10 border border-demo-warning/20 flex items-center justify-center mb-5">
           <CameraOff className="w-7 h-7 text-demo-warning" />
         </div>
-        <h3 className="text-xl font-display font-semibold mb-2">
+        <h3 className="text-xl font-display font-normal mb-2">
           Camera unavailable
         </h3>
         <p className="text-sm text-text-muted mb-6 max-w-md">{error}</p>
@@ -369,7 +418,7 @@ export function TeachDemo() {
         <div className="w-16 h-16 rounded-2xl bg-accent-muted border border-accent/20 flex items-center justify-center mb-5">
           <RefreshCw className="w-7 h-7 text-accent animate-spin" />
         </div>
-        <h3 className="text-lg font-display font-semibold mb-2">
+        <h3 className="text-lg font-display font-normal mb-2">
           Loading the model
         </h3>
         <p className="text-sm text-text-muted max-w-sm">
@@ -394,7 +443,7 @@ export function TeachDemo() {
               <Camera className="w-9 h-9 text-accent" />
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-display font-semibold tracking-tight mb-2">
+            <h3 className="text-xl sm:text-2xl font-display font-normal mb-2">
               Teach my page to see you
             </h3>
             <p className="text-sm text-text-secondary max-w-lg mb-8 leading-relaxed">
@@ -446,17 +495,21 @@ export function TeachDemo() {
         {/* Camera active: video feed + prediction */}
         {cameraActive && (
           <div className="relative">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full aspect-[4/3] object-cover hidden"
-            />
-            <canvas
-              ref={canvasRef}
-              className="w-full aspect-[4/3] object-cover"
-            />
+            {/* Video must have real CSS dimensions so the browser keeps decoding frames.
+                It sits behind the canvas (opacity-0) and acts as the pixel source. */}
+            <div className="relative w-full aspect-[4/3] bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,var(--accent-muted)_0%,transparent_70%)] rounded-sm overflow-hidden">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="absolute inset-0 w-full h-full object-cover opacity-0 pointer-events-none"
+              />
+              <canvas
+                ref={canvasRef}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
 
             <AnimatePresence>
               {prediction && isTrained && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Send, Check, Mail, Sun, Moon } from "lucide-react";
+import { Send, Check, Mail, Sun, Moon, FileText } from "lucide-react";
 import { cn, trackSpotlight } from "@/lib/utils";
 import { Reveal, StaggerReveal, StaggerItem, MaskText } from "@/components/Reveal";
 import { Ghost } from "@/components/Ghost";
@@ -60,14 +60,15 @@ export function Contact() {
         <Reveal>
           <div className="mb-12">
             <p className="section-eyebrow">
-              <span className="motif-hash">#</span>Contact
+              <span className="motif-bracket" />Say something
             </p>
             <h2 className="section-heading">
-              <MaskText>Let&apos;s build something</MaskText>
+              <MaskText>Let&apos;s build something real</MaskText>
             </h2>
             <p className="section-desc">
-              I&apos;m always open to interesting problems, research discussions, and
-              the right opportunity. Drop me a line &mdash; I&apos;ll reply within 48 hours.
+              Hard problems, research rabbit holes, the right opportunity —
+              I&apos;m in. Drop a line, skip the small talk. I reply within 48
+              hours, not &ldquo;within 2 business days.&rdquo;
             </p>
           </div>
         </Reveal>
@@ -163,14 +164,14 @@ export function Contact() {
 
           <StaggerItem className="md:col-span-2 flex flex-col gap-4">
             <a
-              href="mailto:hello@adityashibu.dev"
+              href="mailto:adityashibu275898@gmail.com"
               onMouseMove={trackSpotlight}
               className="relative card-spotlight flex items-center gap-3 p-4 rounded-xl border border-border bg-surface hover:border-text-muted transition-all group"
             >
               <Mail className="w-5 h-5 text-text-muted group-hover:text-accent transition-colors" />
               <div>
                 <p className="text-sm font-medium">Email</p>
-                <p className="text-xs text-text-muted">hello@adityashibu.dev</p>
+                <p className="text-xs text-text-muted">adityashibu275898@gmail.com</p>
               </div>
             </a>
             <a
@@ -187,7 +188,7 @@ export function Contact() {
               </div>
             </a>
             <a
-              href="https://linkedin.com/in/adityashibu"
+              href="https://linkedin.com/in/adityashibu41148"
               target="_blank"
               rel="noopener noreferrer"
               onMouseMove={trackSpotlight}
@@ -196,7 +197,21 @@ export function Contact() {
               <LinkedInIcon className="w-5 h-5 text-text-muted group-hover:text-text-primary transition-colors" />
               <div>
                 <p className="text-sm font-medium">LinkedIn</p>
-                <p className="text-xs text-text-muted">/in/adityashibu</p>
+                <p className="text-xs text-text-muted">/in/adityashibu41148</p>
+              </div>
+            </a>
+
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              onMouseMove={trackSpotlight}
+              className="relative card-spotlight flex items-center gap-3 p-4 rounded-xl border border-accent/30 bg-accent-muted hover:border-accent/50 transition-all group"
+            >
+              <FileText className="w-5 h-5 text-accent" />
+              <div>
+                <p className="text-sm font-medium">The full bundle</p>
+                <p className="text-xs text-text-muted">Résumé + every project, one PDF</p>
               </div>
             </a>
 

@@ -61,15 +61,18 @@ export function StaggerItem({
   children,
   className,
   onMouseMove,
+  onMouseLeave,
 }: {
   children: ReactNode;
   className?: string;
   onMouseMove?: React.MouseEventHandler<HTMLDivElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
 }) {
   return (
     <motion.div
       className={className}
       onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       variants={{
         hidden: { opacity: 0, y: 16 },
         visible: {
