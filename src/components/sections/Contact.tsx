@@ -28,6 +28,7 @@ type SubmitState = "idle" | "sending" | "success" | "error";
 
 export function Contact() {
   const [state, setState] = useState<SubmitState>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const { theme, toggle } = useTheme();
 
@@ -42,14 +43,18 @@ export function Contact() {
         body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error || "Something went wrong");
+      }
 
       setState("success");
       setFormData({ name: "", email: "", message: "" });
       setTimeout(() => setState("idle"), 3000);
-    } catch {
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong");
       setState("error");
-      setTimeout(() => setState("idle"), 3000);
+      setTimeout(() => setState("idle"), 4000);
     }
   }, [formData]);
 
@@ -154,7 +159,7 @@ export function Contact() {
                 )}
                 {state === "error" && (
                   <>
-                    Something went wrong &mdash; try again
+                    {errorMsg || "Something went wrong — try again"}
                     <Send className="w-3.5 h-3.5" />
                   </>
                 )}
