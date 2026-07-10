@@ -7,14 +7,14 @@ export async function POST(request: Request) {
 
     if (!name || !email || !message) {
       return NextResponse.json(
-        { error: "Please fill in all fields." },
+        { error: "Looks like a field is missing — please fill in your name, email, and message." },
         { status: 400 }
       );
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json(
-        { error: "Please enter a valid email address." },
+        { error: "That email address doesn't look right. Double-check it and try again." },
         { status: 400 }
       );
     }
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     if (!apiKey) {
       console.warn("[contact] RESEND_API_KEY not set");
       return NextResponse.json(
-        { error: "Email service is not configured. Please try again later." },
+        { error: "The email service isn't set up yet on my end — reach me directly at adityashibu275898@gmail.com instead." },
         { status: 500 }
       );
     }
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     if (error) {
       console.error("[contact] Resend API error:", error);
       return NextResponse.json(
-        { error: "Something went wrong sending your message. Please try again." },
+        { error: "Couldn't send your message right now — try again in a minute, or email me directly at adityashibu275898@gmail.com." },
         { status: 500 }
       );
     }
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(
-      { error: "Invalid request. Please check your input and try again." },
+      { error: "Something broke on my end — try again, or just email me at adityashibu275898@gmail.com." },
       { status: 400 }
     );
   }
