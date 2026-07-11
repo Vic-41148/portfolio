@@ -149,7 +149,7 @@ export function Hero() {
               <span className="absolute inline-flex h-full w-full rounded-full bg-demo-success opacity-60 animate-ping" />
               <span className="relative inline-flex rounded-full w-2 h-2 bg-demo-success" />
             </span>
-            Bangalore, India &middot; will relocate for the right chaos
+            New Delhi, India &middot; will relocate for the right chaos
           </motion.p>
         </div>
       </motion.div>
@@ -165,7 +165,7 @@ export function Hero() {
             Scroll
             <span className="scroll-line" aria-hidden="true" />
           </span>
-          <span className="hidden sm:block">12.97&deg;N &middot; 77.59&deg;E &middot; IST</span>
+          <span className="hidden sm:block">28.61&deg;N &middot; 77.21&deg;E &middot; IST</span>
         </div>
       </motion.div>
     </section>

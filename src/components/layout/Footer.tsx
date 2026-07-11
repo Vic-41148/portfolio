@@ -5,6 +5,7 @@ import { Mail, Send, Check } from "lucide-react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { Reveal } from "@/components/Reveal";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -46,7 +47,8 @@ export function Footer() {
       setState("success");
       setEmail("");
       setTimeout(() => setState("idle"), 3000);
-    } catch {
+    } catch (err) {
+      console.error("Newsletter signup failed:", err);
       setState("error");
       setTimeout(() => setState("idle"), 3000);
     }
@@ -110,7 +112,7 @@ export function Footer() {
 
             <div className="flex items-center gap-4">
               <a
-                href="mailto:adityashibu275898@gmail.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="text-text-muted hover:text-text-primary transition-colors"
                 aria-label="Email"
               >

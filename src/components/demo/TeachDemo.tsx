@@ -124,7 +124,7 @@ export function TeachDemo() {
 
     try {
       const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm"
       );
 
       let handLandmarker: HandLandmarker;
@@ -167,7 +167,6 @@ export function TeachDemo() {
       setCameraActive(true);
       setLoading(false);
     } catch (err) {
-      console.error("Camera/model init error:", err);
       const msg = err instanceof Error ? err.message : "Failed to initialize";
       if (msg.includes("NotReadableError") || msg.includes("Could not start video source")) {
         setError("Camera is in use by another app or tab. Close it and try again.");
