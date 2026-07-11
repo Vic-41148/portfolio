@@ -40,7 +40,7 @@ const tiles = [
   },
   {
     title: "Location",
-    content: "Bangalore, India · remote · will relocate for the right kind of trouble",
+    content: "New Delhi, India · remote · will relocate for the right kind of trouble",
     icon: Globe,
     span: "md:col-span-2",
   },

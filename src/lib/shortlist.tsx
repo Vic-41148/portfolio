@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { SITE_URL, CONTACT_EMAIL } from "@/lib/constants";
 
 export interface ShortlistItem {
   slug: string;
@@ -62,9 +63,9 @@ export function useShortlist() {
  *  stand-in for a cart checkout. No fake commerce, just a prefilled email. */
 export function buildShortlistMailto(items: ShortlistItem[]) {
   const subject = encodeURIComponent("Projects I want to talk about");
-  const lines = items.map((item) => `- ${item.title}: ${new URL(item.href, "https://adityashibu.dev").toString()}`);
+  const lines = items.map((item) => `- ${item.title}: ${new URL(item.href, SITE_URL).toString()}`);
   const body = encodeURIComponent(
     `Hey Aditya,\n\nI looked through your work and want to talk about:\n\n${lines.join("\n")}\n\n`
   );
-  return `mailto:adityashibu275898@gmail.com?subject=${subject}&body=${body}`;
+  return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
 }
