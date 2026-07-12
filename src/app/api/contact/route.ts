@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { CONTACT_RECIPIENT, CONTACT_FROM, CONTACT_EMAIL } from "@/lib/constants";
+
+function escapeHtml(str: string) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 export async function POST(request: Request) {
   try {
@@ -22,36 +32,33 @@ export async function POST(request: Request) {
     const apiKey = process.env.RESEND_API_KEY;
 
     if (!apiKey) {
-      console.warn("[contact] RESEND_API_KEY not set");
       return NextResponse.json(
-        { error: "The email service isn't set up yet on my end — reach me directly at adityashibu275898@gmail.com instead." },
+        { error: `The email service isn't set up yet on my end — reach me directly at ${CONTACT_EMAIL} instead.` },
         { status: 500 }
       );
     }
 
     const resend = new Resend(apiKey);
 
-    const { data, error } = await resend.emails.send({
-      from: "Portfolio Contact <contact@adityashibu.com>",
-      to: "adityashibu41148@gmail.com",
-      subject: `Contact from ${name}`,
-      reply_to: email,
-      html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Message:</strong></p><p>${message}</p>`,
+    const { error } = await resend.emails.send({
+      from: CONTACT_FROM,
+      to: CONTACT_RECIPIENT,
+      subject: `Contact from ${escapeHtml(name)}`,
+      replyTo: email,
+      html: `<p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Message:</strong></p><p>${escapeHtml(message)}</p>`,
     });
 
     if (error) {
-      console.error("[contact] Resend API error:", error);
       return NextResponse.json(
-        { error: "Couldn't send your message right now — try again in a minute, or email me directly at adityashibu275898@gmail.com." },
+        { error: `Couldn't send your message right now — try again in a minute, or email me directly at ${CONTACT_EMAIL}.` },
         { status: 500 }
       );
     }
 
-    console.log("[contact] Email sent:", data);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(
-      { error: "Something broke on my end — try again, or just email me at adityashibu275898@gmail.com." },
+      { error: `Something broke on my end — try again, or just email me at ${CONTACT_EMAIL}.` },
       { status: 400 }
     );
   }

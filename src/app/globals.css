@@ -17,8 +17,8 @@
   --color-demo-success: var(--demo-success);
   --color-demo-success-foreground: var(--demo-success-foreground);
   --color-demo-warning: var(--demo-warning);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-dm-sans);
+  --font-mono: var(--font-space-mono);
   --font-display: var(--font-display);
 }
 

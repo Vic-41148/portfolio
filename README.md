@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aditya Shibu — Portfolio
+
+Personal portfolio and blog. ML & Computer Vision Engineer focused on on-device inference, secure LLM systems, and browser-based demos.
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS 4
+- **Animation:** Framer Motion (`motion`)
+- **Deployment:** Cloudflare Workers via OpenNext
+- **Contact:** Resend API
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+cp .env.example .env.local   # fill in RESEND_API_KEY
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run build:cloudflare` | Cloudflare Workers build |
+| `npm run lint` | ESLint |
+| `npm test` | Run tests (Vitest) |
+| `npm run test:watch` | Run tests in watch mode |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+See `.env.example` for required variables:
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Purpose |
+|----------|---------|
+| `NEXT_PUBLIC_SITE_URL` | Site URL (default: `https://adityashibu.dev`) |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Public contact email |
+| `CONTACT_EMAIL` | Recipient for contact form |
+| `CONTACT_FROM` | Resend sender address |
+| `RESEND_API_KEY` | Resend API key (required for contact form) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/              # Next.js App Router pages
+│   ├── api/contact/  # Contact form API route
+│   ├── work/         # Project detail pages
+│   └── writing/      # Blog posts
+├── components/       # React components
+│   ├── demo/         # Interactive ML demos (TeachDemo)
+│   ├── layout/       # Nav, Footer
+│   └── sections/     # Homepage sections
+└── lib/              # Utilities, hooks, constants
+```

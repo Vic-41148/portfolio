@@ -7,6 +7,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { ThemeProvider } from "@/lib/theme";
 import { ShortlistProvider } from "@/lib/shortlist";
 import { ShortlistDrawer } from "@/components/ShortlistDrawer";
+import { SITE_URL } from "@/lib/constants";
 
 const displayFont = Anton({
   weight: "400",
@@ -16,13 +17,13 @@ const displayFont = Anton({
 
 const sansFont = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-dm-sans",
 });
 
 const monoFont = Space_Mono({
   weight: ["400", "700"],
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  variable: "--font-space-mono",
 });
 
 export const metadata: Metadata = {
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
   },
   description:
     "ML & Systems Engineer. I write models that run on-device — computer vision in your browser, no server required. Came up through C++ and systems, going all-in on CV.",
-  metadataBase: new URL("https://adityashibu.dev"),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
     locale: "en_US",

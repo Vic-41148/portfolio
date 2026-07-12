@@ -7,6 +7,7 @@ import { Reveal, StaggerReveal, StaggerItem, MaskText } from "@/components/Revea
 import { Ghost } from "@/components/Ghost";
 import { motion } from "motion/react";
 import { useTheme } from "@/lib/theme";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -169,14 +170,14 @@ export function Contact() {
 
           <StaggerItem className="md:col-span-2 flex flex-col gap-4">
             <a
-              href="mailto:adityashibu275898@gmail.com"
+              href={`mailto:${CONTACT_EMAIL}`}
               onMouseMove={trackSpotlight}
               className="relative card-spotlight flex items-center gap-3 p-4 rounded-xl border border-border bg-surface hover:border-text-muted transition-all group"
             >
               <Mail className="w-5 h-5 text-text-muted group-hover:text-accent transition-colors" />
               <div>
                 <p className="text-sm font-medium">Email</p>
-                <p className="text-xs text-text-muted">adityashibu275898@gmail.com</p>
+                <p className="text-xs text-text-muted">{CONTACT_EMAIL}</p>
               </div>
             </a>
             <a
