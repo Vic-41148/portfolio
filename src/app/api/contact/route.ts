@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       from: CONTACT_FROM,
       to: CONTACT_RECIPIENT,
       subject: `Contact from ${escapeHtml(name)}`,
-      reply_to: email,
+      replyTo: email,
       html: `<p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Message:</strong></p><p>${escapeHtml(message)}</p>`,
     });
 
