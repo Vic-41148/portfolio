@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { authorize } from "@/lib/admin-auth";
 import { POSTS_PATH, getFile, listDirectory, repoConfig } from "@/lib/github";
-import { parseFrontmatter } from "@/lib/frontmatter";
+import { isLive, parseFrontmatter } from "@/lib/frontmatter";
 
 export const runtime = "nodejs";
 
@@ -29,6 +29,8 @@ export async function GET(request: Request) {
           title: data.title ?? slug,
           date: data.date ?? "",
           sha: file.sha,
+          ...(data.publishAt ? { publishAt: data.publishAt } : {}),
+          live: isLive(data.publishAt),
         };
       })
     );

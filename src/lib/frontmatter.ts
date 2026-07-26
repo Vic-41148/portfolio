@@ -37,6 +37,17 @@ export interface PostFrontmatter {
   readTime: string;
   tags: string[];
   linkedin?: string;
+  /** ISO instant. Until it passes, the post is committed but not built. */
+  publishAt?: string;
+}
+
+/** A post is live once its publishAt has passed (or it never had one).
+ *  Everything is evaluated at build time, so a scheduled post appears on the
+ *  first rebuild after its moment — that's what the hourly cron triggers. */
+export function isLive(publishAt: string | undefined, now = Date.now()): boolean {
+  if (!publishAt) return true;
+  const at = Date.parse(publishAt);
+  return Number.isNaN(at) ? true : at <= now;
 }
 
 /** Serializes frontmatter back to a markdown file body. Newlines are stripped
@@ -54,6 +65,7 @@ export function buildMarkdownFile(frontmatter: PostFrontmatter, content: string)
   ];
 
   if (frontmatter.linkedin) lines.push(`linkedin: ${clean(frontmatter.linkedin)}`);
+  if (frontmatter.publishAt) lines.push(`publishAt: ${clean(frontmatter.publishAt)}`);
 
   return `---\n${lines.join("\n")}\n---\n\n${content.trim()}\n`;
 }

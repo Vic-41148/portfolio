@@ -65,6 +65,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "LinkedIn URL must point at linkedin.com." }, { status: 400 });
   }
 
+  // Only keep a publishAt that is both parseable and actually in the future —
+  // a past one would just be noise in the file.
+  let publishAt = "";
+  if (typeof meta.publishAt === "string" && meta.publishAt.trim()) {
+    const parsed = Date.parse(meta.publishAt);
+    if (Number.isNaN(parsed)) {
+      return NextResponse.json({ error: "Schedule time is not a valid date." }, { status: 400 });
+    }
+    if (parsed > Date.now()) publishAt = new Date(parsed).toISOString();
+  }
+
   const frontmatter: PostFrontmatter = {
     title,
     excerpt: typeof meta.excerpt === "string" ? meta.excerpt.trim() : "",
@@ -72,6 +83,7 @@ export async function POST(request: Request) {
     readTime: typeof meta.readTime === "string" ? meta.readTime.trim() : "5 min",
     tags: Array.isArray(meta.tags) ? meta.tags.filter((t): t is string => typeof t === "string") : [],
     ...(linkedin ? { linkedin } : {}),
+    ...(publishAt ? { publishAt } : {}),
   };
 
   const rawImages = Array.isArray(body.images) ? body.images : [];
@@ -126,7 +138,13 @@ export async function POST(request: Request) {
       existing?.sha
     );
 
-    return NextResponse.json({ ok: true, slug, url: `/writing/${slug}`, commitUrl });
+    return NextResponse.json({
+      ok: true,
+      slug,
+      url: `/writing/${slug}`,
+      commitUrl,
+      ...(publishAt ? { publishAt } : {}),
+    });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Publish failed." },

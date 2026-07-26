@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { formatDate, parseFrontmatter } from "@/lib/frontmatter";
+import { formatDate, isLive, parseFrontmatter } from "@/lib/frontmatter";
 
 export { formatDate, parseFrontmatter };
 
@@ -16,6 +16,8 @@ export interface Post {
   tags: string[];
   /** Optional permalink to the matching LinkedIn post */
   linkedin?: string;
+  /** ISO instant; while it's in the future the post stays out of the build */
+  publishAt?: string;
   content: string;
 }
 
@@ -34,12 +36,13 @@ function toPost(slug: string, raw: string): Post {
     readTime: data.readTime ?? "5 min",
     tags: data.tags ? data.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
     ...(data.linkedin ? { linkedin: data.linkedin } : {}),
+    ...(data.publishAt ? { publishAt: data.publishAt } : {}),
     content,
   };
 }
 
-/** All posts, newest first. Build-time only — never call from a route handler. */
-export function getPosts(): Post[] {
+/** Every post on disk, scheduled ones included. */
+export function getAllPosts(): Post[] {
   if (!fs.existsSync(POSTS_DIR)) return [];
 
   return fs
@@ -49,8 +52,19 @@ export function getPosts(): Post[] {
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
+/** Published posts, newest first. Build-time only — never call from a route
+ *  handler. Scheduled posts are filtered out here, which is why a scheduled
+ *  post needs a rebuild to appear. */
+export function getPosts(): Post[] {
+  return getAllPosts().filter((post) => isLive(post.publishAt));
+}
+
 export function getPost(slug: string): Post | undefined {
   const file = path.join(POSTS_DIR, `${slug}.md`);
   if (!file.startsWith(POSTS_DIR) || !fs.existsSync(file)) return undefined;
-  return toPost(slug, fs.readFileSync(file, "utf8"));
+
+  const post = toPost(slug, fs.readFileSync(file, "utf8"));
+  // Guard the detail route too: without this a scheduled post would still be
+  // reachable directly by URL even though it's absent from every listing.
+  return isLive(post.publishAt) ? post : undefined;
 }
