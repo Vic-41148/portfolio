@@ -8,6 +8,7 @@ import { LiveDemo } from "@/components/sections/LiveDemoLazy";
 import { About } from "@/components/sections/About";
 import { ProofWall } from "@/components/sections/ProofWall";
 import { Writing } from "@/components/sections/Writing";
+import { LinkedInPosts } from "@/components/sections/LinkedInPosts";
 import { Contact } from "@/components/sections/Contact";
 
 export default function Home() {
@@ -25,6 +26,7 @@ export default function Home() {
       <Engagement />
       <ProofWall />
       <Writing />
+      <LinkedInPosts />
       <div className="section-alt w-full">
         <Contact />
       </div>
