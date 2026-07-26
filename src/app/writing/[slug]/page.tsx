@@ -106,6 +106,35 @@ Also: every defense has blind spots. The goal isn't 100% (impossible) — it's k
   },
 };
 
+/** Minimal inline markdown: **bold**, *italic*, `code`. The old regex
+ *  special-cases only matched bold-with-trailing-colon and duplicated the
+ *  matched text into the tail of each list item. */
+function renderInline(text: string) {
+  return text
+    .split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g)
+    .filter(Boolean)
+    .map((part, i) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return (
+          <strong key={i} className="text-text-primary font-semibold">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+        return <em key={i}>{part.slice(1, -1)}</em>;
+      }
+      if (part.startsWith("`") && part.endsWith("`")) {
+        return (
+          <code key={i} className="font-mono text-[0.85em] px-1 py-0.5 rounded bg-elevated text-text-primary">
+            {part.slice(1, -1)}
+          </code>
+        );
+      }
+      return part;
+    });
+}
+
 export function generateStaticParams() {
   return Object.keys(posts).map((slug) => ({ slug }));
 }
@@ -158,56 +187,35 @@ export default async function WritingPostPage({ params }: { params: Promise<{ sl
             if (para.startsWith("## ")) {
               return (
                 <h2 key={i} className="text-xl font-display font-normal mt-10 mb-4">
-                  {para.replace("## ", "")}
+                  {renderInline(para.replace("## ", ""))}
                 </h2>
-              );
-            }
-            if (para.startsWith("- **")) {
-              const items = para.split("\n").filter((l) => l.startsWith("-"));
-              return (
-                <ul key={i} className="space-y-2 list-disc list-inside text-text-secondary">
-                  {items.map((item, j) => {
-                    const boldText = item.replace(/^- \*\*(.+?)\*\*:/, "$1:");
-                    const rest = item.replace(/^- \*\*(.+?)\*\*:/, "");
-                    return (
-                      <li key={j} className="leading-relaxed">
-                        <strong className="text-text-primary">{boldText}</strong>
-                        {rest}
-                      </li>
-                    );
-                  })}
-                </ul>
-              );
-            }
-            if (para.startsWith("1. **") || para.startsWith("2. **") || para.startsWith("3. **") || para.startsWith("4. **")) {
-              const items = para.split("\n").filter((l) => /^\d+\./.test(l));
-              return (
-                <ol key={i} className="space-y-2 list-decimal list-inside text-text-secondary">
-                  {items.map((item, j) => {
-                    const text = item.replace(/^\d+\. \*\*(.+?)\*\*:/, "$1:");
-                    const rest = item.replace(/^\d+\. \*\*(.+?)\*\*:/, "");
-                    return (
-                      <li key={j} className="leading-relaxed">
-                        <strong className="text-text-primary">{text}</strong>
-                        {rest}
-                      </li>
-                    );
-                  })}
-                </ol>
               );
             }
             if (para.startsWith("- ")) {
               return (
-                <ul key={i} className="space-y-1 list-disc list-inside text-text-secondary">
-                  {para.split("\n").map((item, j) => (
-                    <li key={j} className="leading-relaxed">{item.replace(/^- /, "")}</li>
+                <ul key={i} className="space-y-2 list-disc list-inside text-text-secondary">
+                  {para.split("\n").filter((l) => l.startsWith("- ")).map((item, j) => (
+                    <li key={j} className="leading-relaxed">
+                      {renderInline(item.replace(/^- /, ""))}
+                    </li>
                   ))}
                 </ul>
               );
             }
+            if (/^\d+\. /.test(para)) {
+              return (
+                <ol key={i} className="space-y-2 list-decimal list-inside text-text-secondary">
+                  {para.split("\n").filter((l) => /^\d+\. /.test(l)).map((item, j) => (
+                    <li key={j} className="leading-relaxed">
+                      {renderInline(item.replace(/^\d+\. /, ""))}
+                    </li>
+                  ))}
+                </ol>
+              );
+            }
             return (
               <p key={i} className="text-text-secondary leading-relaxed">
-                {para}
+                {renderInline(para)}
               </p>
             );
           })}
