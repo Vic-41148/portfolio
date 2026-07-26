@@ -84,9 +84,10 @@ const projects: Record<string, {
   },
 };
 
-export function generateStaticParams() {
-  return Object.keys(projects).map((slug) => ({ slug }));
-}
+/** Same reason as the writing detail route: OpenNext's prerendered-page cache
+ *  isn't configured on this deployment, so SSG pages 404 on Workers once the
+ *  edge cache lapses. Rendering on demand reads from a bundled object literal. */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

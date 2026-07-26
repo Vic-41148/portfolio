@@ -2,10 +2,6 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/constants";
 import { getPosts } from "@/lib/posts";
 
-// Same reasoning as src/app/page.tsx: getPosts() needs the build-time
-// filesystem, which the deployed Worker doesn't have.
-export const revalidate = false;
-
 export default function sitemap(): MetadataRoute.Sitemap {
   const writingEntries: MetadataRoute.Sitemap = getPosts().map((post) => ({
     url: `${SITE_URL}/writing/${post.slug}`,

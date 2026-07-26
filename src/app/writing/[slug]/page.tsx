@@ -2,19 +2,19 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Calendar, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
-import { getPost, getPosts } from "@/lib/posts";
+import { getPost } from "@/lib/posts";
 import { Markdown } from "@/lib/markdown";
 
-export function generateStaticParams() {
-  return getPosts().map((post) => ({ slug: post.slug }));
-}
-
-// See src/app/page.tsx for why every fs-backed route needs this. dynamicParams
-// = false additionally means a slug outside generateStaticParams 404s outright
-// instead of the Worker attempting a runtime render (and fs read) for it.
-export const dynamic = "force-static";
-export const dynamicParams = false;
-export const revalidate = false;
+/** Rendered per request rather than prerendered.
+ *
+ *  OpenNext keeps prerendered SSG pages in an incremental cache that isn't
+ *  configured here (no R2 binding), so on Workers those pages come back 404
+ *  with NoFallbackError — reproducible locally with `wrangler dev`. Post
+ *  content is bundled via posts.data.ts, so rendering on demand costs a
+ *  markdown parse from memory and always reflects what was deployed.
+ *
+ *  Wiring up an R2 incremental cache would allow prerendering again. */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
