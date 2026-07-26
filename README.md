@@ -13,7 +13,7 @@ Personal portfolio and blog. ML & Computer Vision Engineer focused on on-device 
 ## Getting Started
 
 ```bash
-cp .env.example .env.local   # fill in RESEND_API_KEY
+cp .env.example .env.local   # fill in the blanks — comments say where each value comes from
 npm install
 npm run dev
 ```
@@ -65,7 +65,8 @@ Setup (one time):
    **Contents: Read and write**.
 2. Set `ADMIN_PASSWORD`, `GITHUB_TOKEN`, `GITHUB_REPO`, and `GITHUB_BRANCH` as
    Cloudflare Worker secrets (`npx wrangler secret put NAME`, or the dashboard).
-3. For local development, copy `.dev.vars.example` to `.dev.vars` and fill it in.
+3. For local development, `cp .env.example .env.local` and fill in the blanks —
+   that file documents where each value comes from.
 
 The Konami code is discovery only — the password is verified server-side and the
 editor is useless without it.
