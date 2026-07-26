@@ -9,6 +9,13 @@ export function generateStaticParams() {
   return getPosts().map((post) => ({ slug: post.slug }));
 }
 
+// See src/app/page.tsx for why every fs-backed route needs this. dynamicParams
+// = false additionally means a slug outside generateStaticParams 404s outright
+// instead of the Worker attempting a runtime render (and fs read) for it.
+export const dynamic = "force-static";
+export const dynamicParams = false;
+export const revalidate = false;
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = getPost(slug);
