@@ -9,12 +9,6 @@ export const metadata: Metadata = {
   description: "Posts about ML, computer vision, security, and systems engineering.",
 };
 
-// See src/app/page.tsx for why this is required on every route that calls
-// getPosts()/getPost() — without it the Worker's background revalidation
-// silently empties the post list a few minutes after each deploy.
-export const dynamic = "force-static";
-export const revalidate = false;
-
 export default function WritingPage() {
   const posts = getPosts();
 

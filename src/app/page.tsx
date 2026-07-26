@@ -12,14 +12,6 @@ import { LinkedInPosts } from "@/components/sections/LinkedInPosts";
 import { Contact } from "@/components/sections/Contact";
 import { getPosts } from "@/lib/posts";
 
-// getPosts() reads content/writing/*.md via fs at render time. That directory
-// only exists during the build — the deployed Cloudflare Worker has no
-// filesystem access to it. Without forcing fully static output, Next's default
-// revalidation window re-runs this page on the Worker in the background and
-// silently overwrites the correct build-time HTML with an empty post list.
-export const dynamic = "force-static";
-export const revalidate = false;
-
 export default function Home() {
   const posts = getPosts().slice(0, 3);
 
