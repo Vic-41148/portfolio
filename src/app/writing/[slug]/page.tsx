@@ -5,72 +5,72 @@ import type { Metadata } from "next";
 
 const posts: Record<string, { title: string; date: string; readTime: string; content: string }> = {
   "on-device-transfer-learning": {
-    title: "Training a CV Model in Your Browser",
+    title: "Teaching a CV Model in Your Browser",
     date: "Jun 2026",
-    readTime: "8 min",
+    readTime: "6 min",
     content: `
 ## The idea
 
-Most people think training ML models requires a GPU cluster, CUDA, and a lot of patience. It doesn't have to — at least not for small problems.
+Most people think a computer-vision model learning something new requires a GPU cluster, CUDA, and a lot of patience. It doesn't have to — at least not for small problems.
 
-Transfer learning lets you take a model that already knows how to see (MobileNet, trained on ImageNet) and repurpose its feature extraction layers for a new task. The features MobileNet learned — edges, textures, shapes — are universal. You just need to teach the final classifier what *your* specific classes look like.
+The trick is picking the right features. If the input representation is good enough, the "learning" on top of it can be almost trivially simple — simple enough to run instantly, in a browser tab, on whatever device is in front of you.
 
 ## Why in the browser?
 
 Running this in the browser isn't just a neat demo trick. It means:
 
 - **Zero infrastructure.** No server, no GPU rental, no Docker. The user's device does everything.
-- **Privacy by design.** The training data never leaves the device. This isn't a feature — it's a fundamental architectural property.
-- **Instant onboarding.** No installs, no accounts, no API keys. Open a URL and train.
+- **Privacy by design.** The camera frames never leave the device. This isn't a feature — it's a fundamental architectural property.
+- **Instant onboarding.** No installs, no accounts, no API keys. Open a URL and teach it.
 
 ## The pipeline
 
-1. **Capture:** MediaPipe Tasks extracts 21 hand landmarks from each video frame. These landmarks are normalized and centered.
-2. **Feature extraction:** The landmarks pass through MobileNet's convolutional base (up to the final average pooling layer), producing a 1280-dimensional feature vector.
-3. **Train:** A small classifier (Dense → 128 → ReLU → Dense → 64 → ReLU → Dense → num_classes → Softmax) trains via SGD on ~20 captured examples per class.
-4. **Inference:** Same forward path, but only through the classifier. The frozen MobileNet base caches its outputs.
+1. **Extract:** MediaPipe Tasks pulls 21 hand landmarks from each video frame — on the WebGPU delegate where available, WebGL otherwise.
+2. **Normalize:** Landmarks are re-centered on the wrist and L2-normalized, so hand size and position in frame stop mattering.
+3. **Capture:** "Training" is just storing normalized landmark vectors for each gesture you show it.
+4. **Classify:** A K-Nearest-Neighbors comparison against your captured examples, every frame, in real time.
 
 ## Key insight
 
-The frozen-features approach is the difference between "works" and "doesn't." Full fine-tuning of MobileNet takes 40+ seconds in the browser and frequently suffers from catastrophic forgetting. A frozen base + a tiny classifier converges in under 10 seconds and is more stable.
+The heavy lifting is all in the features. MediaPipe's landmark extractor is the pretrained model doing the real perception work; once frames become normalized landmark vectors, a KNN with a handful of examples per class is enough to separate gestures reliably. No training loop, no epochs, no loss curve — and it still feels like magic to teach.
 
-MobileNet features are surprisingly good few-shot descriptors straight out of the box. The ImageNet pretraining generalized better than we had any right to expect.
+The honest trade: KNN memorizes rather than generalizes. Two similar gestures can collide, and a production system would learn a proper feature space. For a teach-it-in-seconds demo, the simplicity is the point.
 
 ## Limitations
 
-Lighting and motion blur are the main failure modes. The landmark extractor needs a clearly visible hand, and rapid movement produces jittery landmarks. Accuracy drops from ~90% to ~60% in poor conditions.
+Lighting and motion blur are the main failure modes. The landmark extractor needs a clearly visible hand, and rapid movement produces jittery landmarks. Occlusion and extreme angles degrade it further — it's a demo of a real pipeline, not a product.
     `.trim(),
   },
   "building-a-game-boy-emulator": {
-    title: "What I Learned Building a Game Boy Emulator",
+    title: "Building a Game Boy Emulator, the Slow Way",
     date: "May 2026",
-    readTime: "10 min",
+    readTime: "6 min",
     content: `
 ## Why an emulator?
 
-I wanted to understand how computers work at the lowest level — not through a textbook, but by building one. A Game Boy emulator is the perfect scope: complex enough to be interesting, constrained enough to finish.
+I wanted to understand how computers work at the lowest level — not through a textbook, but by building one. A Game Boy emulator is the right scope: complex enough to be interesting, constrained enough that finishing is plausible.
 
-## The CPU
+This is a progress report, not a victory lap. The emulator is early — memory bus, BIOS loading, register file. The CPU core is next. I'm writing about it anyway, because learning in public beats pretending in private.
 
-The Game Boy uses a Sharp SM83 processor, a hybrid between the Intel 8080 and the Z80. It has 8-bit registers, 16-bit addressing, and a hilariously small instruction set compared to modern x86. Writing the CPU core means implementing each opcode cycle-accurately — every fetch, decode, execute, and interrupt must match the original timing.
+## Scope lesson one: I started with the wrong console
 
-The hardest part? The undocumented behavior. Some instructions have side effects that aren't in the official documentation — you discover them when a game glitches and you spend three days tracing through a reference emulator.
+The first attempt was a Game Boy Advance emulator. The GBA's memory map alone — external memory, internal work RAM, display memory regions — swallowed days before a single instruction could execute. Bigger console, bigger mistake.
 
-## The PPU
+Restarting on the original Game Boy wasn't giving up; it was picking a fight I could actually win. Smaller memory map, one CPU, decades of documentation.
 
-The Picture Processing Unit is where the magic happens. It renders tiles, sprites, and backgrounds on a 160×144 pixel LCD. The PPU has four modes (OAM scan, drawing, HBlank, VBlank), and each must be timed to the 4.19MHz clock cycle.
+## Why the bus comes first
 
-Getting the pixel FIFO pipeline right was the single hardest part of the entire project. A single cycle off and every game has graphical corruption.
+The tempting starting point is the CPU — it feels like the "real" work. But everything on the Game Boy talks through the memory bus: the cartridge, video RAM, high RAM, I/O registers. Get addressing wrong and every component you build afterward inherits the bug.
 
-## The APU
+So the bus went in first, then BIOS loading, then the register file. The CPU core lands on ground that's already solid.
 
-The Audio Processing Unit has four channels: two pulse waves, one wave channel, and one noise channel. Each has its own envelope, sweep, and length counter. The audio mixing in the original hardware has subtle analog behaviors — channel interaction, DC offset, phase cancellation — that aren't documented anywhere.
+## The register file is sneakily educational
 
-I rewrote the APU three times before the audio sounded right.
+The SM83's registers pair up — B and C become BC, H and L become HL — and the AF pair is the weird one: the low byte is the flag register, and its bottom four bits are hard-wired to zero. Encoding that in C++ types, so illegal flag states are unrepresentable instead of merely avoided, taught me more about hardware-faithful modeling than any tutorial.
 
-## What I'd do differently
+## What's next
 
-Test-driven development for opcodes. I wrote the CPU core first and tested against ROMs, which meant debugging everything at once. A proper test harness with Blargg's test ROMs from day one would have saved weeks.
+The SM83 CPU core, opcode by opcode — with a proper test harness from day one, because debugging a CPU against real ROMs with no tests is how people lose weekends. Then the PPU. The repo is public the whole way: half-finished parts, dead ends, and all.
     `.trim(),
   },
   "measuring-llm-defenses": {
@@ -110,8 +110,8 @@ export function generateStaticParams() {
   return Object.keys(posts).map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Metadata {
-  const { slug } = params as unknown as { slug: string };
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   const post = posts[slug];
   if (!post) return { title: "Post Not Found" };
 
@@ -122,7 +122,7 @@ export function generateMetadata({ params }: { params: Promise<{ slug: string }>
 }
 
 export default async function WritingPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = params as unknown as { slug: string };
+  const { slug } = await params;
   const post = posts[slug];
 
   if (!post) notFound();

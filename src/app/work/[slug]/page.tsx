@@ -28,13 +28,13 @@ const projects: Record<string, {
     title: "Teach My Page to See",
     subtitle: "Real-time webcam CV with in-browser training",
     problem: "Most web CV demos run a pre-trained model. That's fine for demoing inference, but it doesn't show you understand the training pipeline. We wanted a demo where the model learns from scratch — from the visitor's own camera feed, in real time, in the browser.",
-    outcome: ["30+ fps on-device", "Trains in ~10 seconds", "Zero server round-trips"],
+    outcome: ["30+ fps on-device", "Learns in seconds", "Zero server round-trips"],
     links: { github: null, demo: "/#demo" },
-    tech: ["MediaPipe Tasks", "TensorFlow.js", "WebGPU", "MobileNet"],
-    decision: "MediaPipe for landmark extraction (21 hand keypoints) over a full CNN — the landmark-based approach is faster and the features are more transferable across lighting conditions. The feature extractor is small enough (4.2MB) to load on mobile.",
-    architecture: "MediaPipe extracts hand landmarks → landmarks feed into a MobileNet feature vector → a 2-layer classifier trains via SGD. Training uses ~20 captured frames per class. Inference runs the same pipeline but only the forward pass through the tiny classifier.",
-    results: "The model converges in 3-5 SGD epochs (~8-12 seconds on a modern laptop, ~20s on phone). WebGPU gives a 2-3x speedup over WebGL on supported devices.",
-    failure: "Initial version used full MobileNet fine-tuning, which took 40+ seconds and produced frequent catastrophic forgetting. The frozen-features + tiny-classifier approach was an order of magnitude faster and more stable.",
+    tech: ["MediaPipe Tasks", "KNN Classifier", "WebGPU", "TypeScript"],
+    decision: "Hand landmarks over raw pixels — MediaPipe's 21 keypoints, normalized to the wrist and L2-normalized, stay stable across lighting and hand position. On top of that, a KNN classifier: no training loop to babysit, learning is effectively instant.",
+    architecture: "MediaPipe Tasks extracts 21 hand landmarks per frame (WebGPU delegate, WebGL fallback) → landmarks normalized relative to the wrist and L2-normalized for scale/position invariance → KNN compares each incoming frame against your captured examples. Capture, learn, classify — all in the browser.",
+    results: "Learns two gestures from a handful of captured frames in seconds and classifies live at 30+ fps on-device. The WebGPU delegate carries the heavy landmark extraction; the KNN itself is negligible.",
+    failure: "KNN's weakness is real: it memorizes rather than generalizes, so two similar gestures can collide. A production system would learn a feature space instead — but for a teach-it-in-ten-seconds browser demo, KNN is the honest trade.",
     honestNote: "Accuracy drops significantly in poor lighting or with motion blur. It's a demo, not a product — but the pipeline architecture is real and the on-device training is genuine.",
   },
   "secure-llm-inference-platform": {
@@ -59,22 +59,22 @@ const projects: Record<string, {
     tech: ["C", "POSIX Threads", "Custom Hashmaps"],
     decision: "Built in C for performance — log analysis at scale needs to be fast and memory-efficient. POSIX threads for concurrent ingestion and analysis. A custom hashmap implementation for O(1) lookups during pattern matching.",
     architecture: "Log ingestion via concurrent readers → parser extracts structured events → analyzer maintains a 5-minute sliding window of events → custom scoring logic evaluates each event against known threat patterns → alerts generated for high-scoring events. All synchronization via pthreads mutexes.",
-    results: "Built for IBM ThinkFest 2026. The engine processes thousands of log lines per second and generates real-time alerts with configurable sensitivity thresholds.",
+    results: "Built for IBM ThinkFest 2026. Concurrent readers feed a 5-minute sliding window backed by custom hashmaps, with weighted scoring generating real-time alerts at configurable sensitivity.",
     failure: "Initial scoring used a simple threshold approach that generated too many false positives. We iterated to a weighted scoring model that considers event frequency, severity, and recency — more accurate but required careful tuning.",
     honestNote: "The current version uses hand-tuned scoring rules rather than learned thresholds. A production version would benefit from ML-based anomaly scoring on top of the real-time pipeline.",
   },
   "game-boy-emulator": {
     title: "Game Boy Emulator",
-    subtitle: "A CPU-to-APU emulator from scratch in C++",
-    problem: "I wanted to understand how computers work at the lowest level — not through a textbook, but by building one. A Game Boy emulator is the perfect scope: complex enough to be interesting, constrained enough to finish.",
-    outcome: ["From scratch in C++", "CPU + PPU + APU"],
+    subtitle: "An in-progress emulator from scratch in C++",
+    problem: "I wanted to understand how computers work at the lowest level — not through a textbook, but by building one. A Game Boy emulator is the right scope: complex enough to be interesting, constrained enough that finishing is plausible.",
+    outcome: ["Early WIP", "From scratch in C++", "Public from day one"],
     links: { github: "https://github.com/Vic-41148/lint-game-boy-emu", demo: null },
-    tech: ["C++", "SDL2"],
-    decision: "Cycle-accuracy over instruction-accuracy. Cycle-accurate emulation accounts for every machine cycle, not just instruction boundaries — this matters for raster effects that games depend on.",
-    architecture: "CPU core (SM83 instruction set) → Memory Bus (cartridge MBC, HRAM, VRAM, OAM) → PPU (tiles, sprites, window, pixel pipeline) → APU (4 channels: 2 pulse, 1 wave, 1 noise) → SDL2 frontend.",
-    results: "Runs real Game Boy ROMs. The CPU core implements the SM83 instruction set with documented opcodes and known undocumented behavior. PPU rendering produces correct graphics for several tested titles.",
-    failure: "The APU was rewritten multiple times. The Game Boy's audio mixing has subtle channel interaction behaviors that aren't documented — I had to trace through a reference emulator to get the audio phase correct.",
-    honestNote: "Not every game works perfectly. Some MBC3 RTC games and a few obscure titles have graphical glitches. It's an ongoing project — the PPU timing needs further refinement for full compatibility.",
+    tech: ["C++"],
+    decision: "Start at the memory bus, not the CPU. Everything on the Game Boy talks through the bus, so getting addressing and the register file right first gives the CPU core solid ground to land on.",
+    architecture: "What exists today: BIOS loading, the memory bus, and the CPU register file — including the AF pair's flag-register special cases. Next: the SM83 CPU core, then the PPU. The full CPU → bus → PPU → APU map is the destination, not the current state.",
+    results: "Honestly? Early. The bus routes reads and writes and the BIOS loader is in place. Nothing playable yet — that milestone arrives with the CPU core, and it'll be public the day it happens.",
+    failure: "The first attempt was a GBA emulator — bigger console, bigger mistake. It stalled at the memory map within days. Scoping down to the original Game Boy is what made 'actually finish this' believable.",
+    honestNote: "This is the long-haul learning project, not a shipped artifact. Progress is public — every commit visible, half-finished parts and all.",
   },
   "primetrade-mlops": {
     title: "primetrade-mlops-round0",
@@ -95,8 +95,8 @@ export function generateStaticParams() {
   return Object.keys(projects).map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Metadata {
-  const { slug } = params as unknown as { slug: string };
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   const project = projects[slug];
   if (!project) return { title: "Project Not Found" };
 
@@ -107,7 +107,7 @@ export function generateMetadata({ params }: { params: Promise<{ slug: string }>
 }
 
 export default async function WorkPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = params as unknown as { slug: string };
+  const { slug } = await params;
   const project = projects[slug];
 
   if (!project) notFound();
