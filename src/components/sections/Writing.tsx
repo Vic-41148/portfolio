@@ -8,17 +8,17 @@ import { trackSpotlight } from "@/lib/utils";
 const posts = [
   {
     slug: "on-device-transfer-learning",
-    title: "Training a CV Model in Your Browser",
-    excerpt: "How MobileNet feature extraction + a tiny classifier can learn new gestures in under 10 seconds — all in JavaScript, no server.",
+    title: "Teaching a CV Model in Your Browser",
+    excerpt: "How hand landmarks + a KNN classifier learn new gestures in seconds — all in the browser, no training loop, no server.",
     date: "Jun 2026",
-    readTime: "8 min",
+    readTime: "6 min",
   },
   {
     slug: "building-a-game-boy-emulator",
-    title: "What I Learned Building a Game Boy Emulator",
-    excerpt: "CPU cycles, memory timing, audio synchronization — the deep systems lessons from writing an emulator from scratch in C++.",
+    title: "Building a Game Boy Emulator, the Slow Way",
+    excerpt: "A progress report from the memory bus up — why the CPU comes last, and the case for learning in public.",
     date: "May 2026",
-    readTime: "10 min",
+    readTime: "6 min",
   },
   {
     slug: "measuring-llm-defenses",
