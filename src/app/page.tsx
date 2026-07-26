@@ -8,9 +8,13 @@ import { LiveDemo } from "@/components/sections/LiveDemoLazy";
 import { About } from "@/components/sections/About";
 import { ProofWall } from "@/components/sections/ProofWall";
 import { Writing } from "@/components/sections/Writing";
+import { LinkedInPosts } from "@/components/sections/LinkedInPosts";
 import { Contact } from "@/components/sections/Contact";
+import { getPosts } from "@/lib/posts";
 
 export default function Home() {
+  const posts = getPosts().slice(0, 3);
+
   return (
     <>
       <Hero />
@@ -24,7 +28,8 @@ export default function Home() {
       <About />
       <Engagement />
       <ProofWall />
-      <Writing />
+      <Writing posts={posts} />
+      <LinkedInPosts />
       <div className="section-alt w-full">
         <Contact />
       </div>

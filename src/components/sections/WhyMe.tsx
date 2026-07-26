@@ -10,7 +10,7 @@ const reasons = [
     num: "01",
     title: "Systems-first",
     content:
-      "C++, emulators, a real-time anomaly-detection engine — before I ever touched ML. The foundation is real, not a bootcamp certificate.",
+      "C++, an emulator mid-build, a real-time anomaly-detection engine — before I ever touched ML. The foundation is real, not a bootcamp certificate.",
   },
   {
     num: "02",
@@ -22,7 +22,7 @@ const reasons = [
     num: "03",
     title: "Documented in the open",
     content:
-      "Every project's a public repo — real commits, real READMEs, real issues. Nothing here is a private codebase you have to take my word for.",
+      "Every project's a public repo — real commits, real history, half-finished parts included. Nothing here is a private codebase you have to take my word for.",
   },
 ];
 

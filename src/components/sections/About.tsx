@@ -10,7 +10,7 @@ const tiles = [
   {
     title: "Bio",
     content:
-      "Started in C++ writing low-level things nobody sees — emulators, a real-time anomaly-detection engine. Then ML got its hooks in me and didn't let go. Now I build models that actually run where you are: on-device, in the browser, no server standing between us. Computer vision is the deep end and I'm still swimming down.",
+      "Started in C++ writing low-level things nobody sees — a Game Boy emulator that's still mid-build, a real-time anomaly-detection engine. Then ML got its hooks in me and didn't let go. Now I build models that actually run where you are: on-device, in the browser, no server standing between us. Computer vision is the deep end and I'm still swimming down.",
     icon: Cpu,
     span: "md:col-span-3 md:row-span-2",
   },
@@ -28,7 +28,7 @@ const tiles = [
   },
   {
     title: "Fun",
-    content: "I build Game Boy emulators for fun and daily-drive Arch, because apparently things need to be hard on purpose. Currently breaking a Godot platformer.",
+    content: "Chipping away at a Game Boy emulator for fun and daily-driving Arch, because apparently things need to be hard on purpose.",
     icon: Gamepad2,
     span: "md:col-span-2",
   },

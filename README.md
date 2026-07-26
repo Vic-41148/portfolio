@@ -13,7 +13,7 @@ Personal portfolio and blog. ML & Computer Vision Engineer focused on on-device 
 ## Getting Started
 
 ```bash
-cp .env.example .env.local   # fill in RESEND_API_KEY
+cp .env.example .env.local   # fill in the blanks — comments say where each value comes from
 npm install
 npm run dev
 ```
@@ -40,6 +40,66 @@ See `.env.example` for required variables:
 | `CONTACT_EMAIL` | Recipient for contact form |
 | `CONTACT_FROM` | Resend sender address |
 | `RESEND_API_KEY` | Resend API key (required for contact form) |
+| `ADMIN_PASSWORD` | Password for the writing editor (see below) |
+| `GITHUB_TOKEN` | Fine-grained PAT the editor commits posts with |
+| `GITHUB_REPO` | `owner/repo` the editor writes to |
+| `GITHUB_BRANCH` | Branch to commit posts on (default `main`) |
+
+## Writing
+
+Posts live in `content/writing/*.md` — frontmatter (`title`, `excerpt`, `date`,
+`readTime`, `tags`, optional `linkedin`) plus a markdown body. Adding a file is
+all it takes: the listing, homepage cards, sitemap, and static routes are all
+derived from that directory.
+
+There's also an in-site editor at `/writing/new` (reachable by entering the
+Konami code on `/writing`). It renders a live preview with the same renderer as
+the published page, and publishing commits the markdown — plus any images, as
+webp under `public/images/writing/<slug>/` — straight to GitHub. Cloudflare
+rebuilds and the post is live a couple of minutes later. It can delete posts
+too; deletions are commits, so anything removed is recoverable from git history.
+
+Setup (one time):
+
+1. Create a fine-grained GitHub PAT scoped to this repo only, with
+   **Contents: Read and write**.
+2. Set `ADMIN_PASSWORD`, `GITHUB_TOKEN`, `GITHUB_REPO`, and `GITHUB_BRANCH` as
+   Cloudflare Worker secrets (`npx wrangler secret put NAME`, or the dashboard).
+3. For local development, `cp .env.example .env.local` and fill in the blanks —
+   that file documents where each value comes from.
+
+The Konami code is discovery only — the password is verified server-side and the
+editor is useless without it.
+
+### Scheduling
+
+Posts can be scheduled for any date and time. A scheduled post commits
+immediately with a `publishAt` instant in its frontmatter and is filtered out of
+the build until that moment passes — so it exists in the repo but not on the
+site, and its URL 404s.
+
+Nothing rebuilds the site on its own, so `.github/workflows/publish-scheduled.yml`
+checks hourly and triggers a deploy when a post has just come due. That needs one
+more secret, on the **GitHub** side this time:
+
+- `CLOUDFLARE_DEPLOY_HOOK` — a deploy hook URL from the Worker's
+  Settings → Builds. Add it under repo Settings → Secrets and variables →
+  Actions.
+
+Without it the workflow fails loudly rather than silently skipping a post. You
+can also run it by hand from the Actions tab ("Publish scheduled posts" →
+Run workflow) to release anything that's due right now.
+
+Because the repo is public, a scheduled post's text is visible in git before it
+goes live. Scheduling controls *when it appears on the site*, not secrecy.
+
+### Sharing to LinkedIn
+
+Publishing doesn't post to LinkedIn — it hands you the text to paste. After a
+successful publish the editor shows a ready-to-paste post (title, excerpt,
+canonical link, hashtags from your tags) with a copy button. Once it's up on
+LinkedIn, drop the post URL into the LinkedIn field and republish: the article
+then renders a "Discuss on LinkedIn" link.
 
 ## Project Structure
 

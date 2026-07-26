@@ -8,8 +8,8 @@ const facts = [
   { headline: "Not a class project.", detail: "CodeShield was built and shipped for IBM ThinkFest 2026.", source: "ThinkFest" },
   { headline: "30+ fps, zero round-trips.", detail: "Hand tracking runs fully in-browser, on-device.", source: "Live demo" },
   { headline: "Five for five.", detail: "5 projects, 5 public repos — nothing private, nothing hidden.", source: "GitHub" },
-  { headline: "No drag-and-drop.", detail: "C++, PyTorch, WebGPU. No low-code builder in sight.", source: "Stack" },
-  { headline: "No borrowed core.", detail: "CPU, PPU, and APU emulation written from scratch.", source: "Game Boy Emulator" },
+  { headline: "No drag-and-drop.", detail: "C++, Python, WebGPU. No low-code builder in sight.", source: "Stack" },
+  { headline: "Built in the open.", detail: "Even the half-finished emulator is public — every commit visible.", source: "Game Boy Emulator" },
 ];
 
 /** Truthful stand-in for a "reviews wall" — verifiable project facts,
