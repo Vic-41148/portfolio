@@ -21,7 +21,48 @@ export interface Post {
   content: string;
 }
 
-const POSTS_DIR = path.join(process.cwd(), "content", "writing");
+/** Where the markdown lives, resolved defensively.
+ *
+ *  A Cloudflare build once produced a site with zero posts and no error: the
+ *  directory wasn't found from process.cwd() there, and the old code treated
+ *  "missing" as "no posts yet" and happily prerendered empty pages. Falling
+ *  back to a module-relative path covers a build that runs from somewhere
+ *  other than the project root, and resolvePostsDir() throws rather than
+ *  returning nothing, so a broken build fails loudly instead of silently
+ *  shipping an empty blog. */
+function candidatePostsDirs(): string[] {
+  const dirs = [path.join(process.cwd(), "content", "writing")];
+
+  try {
+    // Only meaningful when this module isn't bundled; harmless when it is.
+    const here = path.dirname(new URL(import.meta.url).pathname);
+    dirs.push(path.resolve(here, "..", "..", "content", "writing"));
+  } catch {
+    /* import.meta unavailable in this context */
+  }
+
+  return dirs;
+}
+
+let cachedPostsDir: string | undefined;
+
+function resolvePostsDir(): string {
+  if (cachedPostsDir) return cachedPostsDir;
+
+  const candidates = candidatePostsDirs();
+  const found = candidates.find((dir) => fs.existsSync(dir));
+
+  if (!found) {
+    throw new Error(
+      `content/writing not found — the build would have shipped a site with no posts.\n` +
+        `cwd: ${process.cwd()}\n` +
+        `looked in:\n${candidates.map((dir) => `  ${dir}`).join("\n")}`
+    );
+  }
+
+  cachedPostsDir = found;
+  return found;
+}
 
 function toPost(slug: string, raw: string): Post {
   const { data, content } = parseFrontmatter(raw);
@@ -43,12 +84,12 @@ function toPost(slug: string, raw: string): Post {
 
 /** Every post on disk, scheduled ones included. */
 export function getAllPosts(): Post[] {
-  if (!fs.existsSync(POSTS_DIR)) return [];
+  const dir = resolvePostsDir();
 
   return fs
-    .readdirSync(POSTS_DIR)
+    .readdirSync(dir)
     .filter((file) => file.endsWith(".md"))
-    .map((file) => toPost(file.replace(/\.md$/, ""), fs.readFileSync(path.join(POSTS_DIR, file), "utf8")))
+    .map((file) => toPost(file.replace(/\.md$/, ""), fs.readFileSync(path.join(dir, file), "utf8")))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
@@ -60,8 +101,9 @@ export function getPosts(): Post[] {
 }
 
 export function getPost(slug: string): Post | undefined {
-  const file = path.join(POSTS_DIR, `${slug}.md`);
-  if (!file.startsWith(POSTS_DIR) || !fs.existsSync(file)) return undefined;
+  const dir = resolvePostsDir();
+  const file = path.join(dir, `${slug}.md`);
+  if (!file.startsWith(dir) || !fs.existsSync(file)) return undefined;
 
   const post = toPost(slug, fs.readFileSync(file, "utf8"));
   // Guard the detail route too: without this a scheduled post would still be
