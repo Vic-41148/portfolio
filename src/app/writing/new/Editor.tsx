@@ -55,6 +55,27 @@ const EMPTY_DRAFT: Draft = {
   markdown: "",
 };
 
+/** Slug used for image paths before the post has a title. Rewritten to the real
+ *  slug as soon as there is one, so a rename never strands an image path. */
+const DRAFT_SLUG = "draft";
+
+function imagePath(slug: string, name: string): string {
+  return `/images/writing/${slug || DRAFT_SLUG}/${name}`;
+}
+
+/** Matches an image reference by filename regardless of which slug directory it
+ *  currently sits in — that's what makes retitling safe. */
+function imagePathPattern(name: string): RegExp {
+  return new RegExp(`/images/writing/[^)\\s]*?/${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "g");
+}
+
+function rewriteImagePaths(markdown: string, names: string[], slug: string): string {
+  return names.reduce(
+    (body, name) => body.replace(imagePathPattern(name), imagePath(slug, name)),
+    markdown
+  );
+}
+
 /** Re-encodes a picked file to webp at a sane max edge, entirely client-side.
  *  Keeps commits small and means the repo never receives a 12 MP phone photo. */
 async function prepareImage(file: File): Promise<PendingImage> {
@@ -100,11 +121,13 @@ export function Editor() {
   const [confirmSlug, setConfirmSlug] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const slugRef = useRef("");
 
-  const slug = draft.slugTouched ? draft.slug : slugify(draft.title);
-  const previewImages = images.map((image) => [`/images/writing/${slug}/${image.name}`, image.previewUrl] as const);
-  const previewMarkdown = previewImages.reduce(
-    (body, [finalPath, blobUrl]) => body.split(finalPath).join(blobUrl),
+  // Falls back to the title whenever the slug field is empty, so clearing it
+  // doesn't strand the post without one.
+  const slug = draft.slugTouched && draft.slug ? draft.slug : slugify(draft.title);
+  const previewMarkdown = images.reduce(
+    (body, image) => body.replace(imagePathPattern(image.name), image.previewUrl),
     draft.markdown
   );
 
@@ -123,6 +146,20 @@ export function Editor() {
     const id = setTimeout(() => localStorage.setItem(DRAFT_KEY, JSON.stringify(draft)), 400);
     return () => clearTimeout(id);
   }, [draft]);
+
+  // Retitling changes the slug, and images live under it — repoint any already
+  // inserted references so the body never points at a directory that won't exist.
+  useEffect(() => {
+    const previous = slugRef.current;
+    slugRef.current = slug;
+    if (previous === slug || images.length === 0) return;
+
+    setDraft((current) => {
+      const names = images.map((image) => image.name);
+      const rewritten = rewriteImagePaths(current.markdown, names, slug);
+      return rewritten === current.markdown ? current : { ...current, markdown: rewritten };
+    });
+  }, [slug, images]);
 
   const loadPosts = useCallback(async () => {
     try {
@@ -169,10 +206,6 @@ export function Editor() {
 
   const handleImages = async (files: File[]) => {
     if (!files.length) return;
-    if (!slug) {
-      setStatus({ kind: "error", message: "Give the post a title first — images are stored under its slug." });
-      return;
-    }
 
     const room = MAX_IMAGES - images.length;
     if (room <= 0) {
@@ -188,7 +221,7 @@ export function Editor() {
         // a caption worth reading rather than echoing a meaningless filename.
         const stem = file.name.replace(/\.[^.]+$/, "");
         const alt = !stem || /^image$/i.test(stem) ? "screenshot" : stem.replace(/[-_]+/g, " ");
-        insertAtCursor(`\n\n![${alt}](/images/writing/${slug}/${image.name})\n\n`);
+        insertAtCursor(`\n\n![${alt}](${imagePath(slug, image.name)})\n\n`);
       } catch (error) {
         setStatus({ kind: "error", message: error instanceof Error ? error.message : "Image failed." });
       }
@@ -215,13 +248,17 @@ export function Editor() {
 
     setStatus({ kind: "busy", message: "Committing to GitHub…" });
 
+    // Belt and braces: images upload under the final slug, so make sure every
+    // reference in the body points there even if a rename raced the rewrite.
+    const markdown = rewriteImagePaths(draft.markdown, images.map((image) => image.name), slug);
+
     try {
       const res = await authedFetch("/api/admin/publish", {
         method: "POST",
         body: JSON.stringify({
           slug,
           overwrite,
-          markdown: draft.markdown,
+          markdown,
           images: images.map(({ name, base64 }) => ({ name, base64 })),
           frontmatter: {
             title: draft.title,
