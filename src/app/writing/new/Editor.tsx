@@ -21,6 +21,7 @@ import { useEditorSession } from "./useEditorSession";
 
 const DRAFT_KEY = "writing-editor-draft";
 const MAX_IMAGE_EDGE = 1600;
+const MAX_IMAGES = 6;
 
 interface PendingImage {
   name: string;
@@ -166,22 +167,44 @@ export function Editor() {
     });
   };
 
-  const handleImages = async (files: FileList | null) => {
-    if (!files?.length) return;
+  const handleImages = async (files: File[]) => {
+    if (!files.length) return;
     if (!slug) {
       setStatus({ kind: "error", message: "Give the post a title first — images are stored under its slug." });
       return;
     }
 
-    for (const file of Array.from(files).slice(0, 6 - images.length)) {
+    const room = MAX_IMAGES - images.length;
+    if (room <= 0) {
+      setStatus({ kind: "error", message: `That's the ${MAX_IMAGES}-image limit for one post.` });
+      return;
+    }
+
+    for (const file of files.slice(0, room)) {
       try {
         const image = await prepareImage(file);
         setImages((current) => [...current, image]);
-        insertAtCursor(`\n\n![${file.name.replace(/\.[^.]+$/, "")}](/images/writing/${slug}/${image.name})\n\n`);
+        // Clipboard images arrive named "image.png" or unnamed, so fall back to
+        // a caption worth reading rather than echoing a meaningless filename.
+        const stem = file.name.replace(/\.[^.]+$/, "");
+        const alt = !stem || /^image$/i.test(stem) ? "screenshot" : stem.replace(/[-_]+/g, " ");
+        insertAtCursor(`\n\n![${alt}](/images/writing/${slug}/${image.name})\n\n`);
       } catch (error) {
         setStatus({ kind: "error", message: error instanceof Error ? error.message : "Image failed." });
       }
     }
+  };
+
+  /** Screenshots pasted straight into the body. Only intercepts the paste when
+   *  the clipboard actually carries image files, so pasting text is untouched. */
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = Array.from(event.clipboardData.files).filter((file) =>
+      file.type.startsWith("image/")
+    );
+    if (!files.length) return;
+
+    event.preventDefault();
+    void handleImages(files);
   };
 
   const publish = async (overwrite = false) => {
@@ -367,7 +390,10 @@ export function Editor() {
           <div className="rounded-2xl border border-border bg-surface overflow-hidden flex flex-col">
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
               <span className="font-mono text-xs uppercase tracking-wider text-text-muted">Markdown</span>
-              <label className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-accent transition-colors cursor-pointer">
+              <label
+                title="Or paste a screenshot straight into the editor"
+                className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-accent transition-colors cursor-pointer"
+              >
                 <ImagePlus className="w-3.5 h-3.5" />
                 Add image
                 <input
@@ -376,7 +402,7 @@ export function Editor() {
                   multiple
                   className="hidden"
                   onChange={(event) => {
-                    void handleImages(event.target.files);
+                    void handleImages(Array.from(event.target.files ?? []));
                     event.target.value = "";
                   }}
                 />
@@ -386,7 +412,8 @@ export function Editor() {
               ref={textareaRef}
               value={draft.markdown}
               onChange={(event) => setDraft((d) => ({ ...d, markdown: event.target.value }))}
-              placeholder={"## A heading\n\nWrite the post here. **Bold**, *italic*, `code`, - lists, and images all render in the preview exactly as they will on the live page."}
+              onPaste={handlePaste}
+              placeholder={"## A heading\n\nWrite the post here. **Bold**, *italic*, `code`, - lists, and images all render in the preview exactly as they will on the live page.\n\nPaste a screenshot straight in and it uploads with the post."}
               spellCheck
               className="flex-1 min-h-[28rem] w-full px-4 py-4 bg-transparent font-mono text-sm leading-relaxed resize-y outline-none placeholder:text-text-muted"
             />
