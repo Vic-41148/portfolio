@@ -5,7 +5,9 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowUpRight,
+  CalendarClock,
   Check,
+  Copy,
   Eye,
   ImagePlus,
   Loader2,
@@ -15,6 +17,9 @@ import {
   Upload,
 } from "lucide-react";
 import { Markdown, estimateReadTime } from "@/lib/markdown";
+import { LinkedInIcon } from "@/components/icons";
+import { linkedInDraft } from "@/lib/share";
+import { SITE_URL } from "@/lib/constants";
 import { slugify } from "@/lib/frontmatter";
 import { cn } from "@/lib/utils";
 import { useEditorSession } from "./useEditorSession";
@@ -33,6 +38,8 @@ interface ListedPost {
   slug: string;
   title: string;
   date: string;
+  publishAt?: string;
+  live?: boolean;
 }
 
 interface Draft {
@@ -43,6 +50,8 @@ interface Draft {
   tags: string;
   linkedin: string;
   markdown: string;
+  /** datetime-local value ("2026-08-01T09:00"); empty means publish now */
+  scheduleAt: string;
 }
 
 const EMPTY_DRAFT: Draft = {
@@ -53,11 +62,27 @@ const EMPTY_DRAFT: Draft = {
   tags: "",
   linkedin: "",
   markdown: "",
+  scheduleAt: "",
 };
 
 /** Slug used for image paths before the post has a title. Rewritten to the real
  *  slug as soon as there is one, so a rename never strands an image path. */
 const DRAFT_SLUG = "draft";
+
+/** datetime-local gives a value with no timezone; it means local time, which is
+ *  what you'd expect when you pick "9am". Converted to an instant here. */
+function scheduleToIso(value: string): string {
+  if (!value) return "";
+  const at = new Date(value);
+  return Number.isNaN(at.getTime()) || at.getTime() <= Date.now() ? "" : at.toISOString();
+}
+
+function formatWhen(iso: string): string {
+  return new Date(iso).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
 
 function imagePath(slug: string, name: string): string {
   return `/images/writing/${slug || DRAFT_SLUG}/${name}`;
@@ -120,6 +145,13 @@ export function Editor() {
   });
   const [confirmSlug, setConfirmSlug] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState("");
+  const [published, setPublished] = useState<{
+    title: string;
+    excerpt: string;
+    url: string;
+    tags: string[];
+  } | null>(null);
+  const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const slugRef = useRef("");
 
@@ -246,6 +278,12 @@ export function Editor() {
       return;
     }
 
+    const publishAt = scheduleToIso(draft.scheduleAt);
+    if (draft.scheduleAt && !publishAt) {
+      setStatus({ kind: "error", message: "That schedule time is in the past." });
+      return;
+    }
+
     setStatus({ kind: "busy", message: "Committing to GitHub…" });
 
     // Belt and braces: images upload under the final slug, so make sure every
@@ -263,10 +301,11 @@ export function Editor() {
           frontmatter: {
             title: draft.title,
             excerpt: draft.excerpt,
-            date: new Date().toISOString().slice(0, 10),
+            date: (publishAt ? new Date(publishAt) : new Date()).toISOString().slice(0, 10),
             readTime: estimateReadTime(draft.markdown),
             tags: draft.tags.split(",").map((t) => t.trim()).filter(Boolean),
             linkedin: draft.linkedin,
+            publishAt,
           },
         }),
       });
@@ -287,7 +326,21 @@ export function Editor() {
       if (!res.ok) throw new Error(body.error ?? "Publish failed.");
 
       localStorage.removeItem(DRAFT_KEY);
-      setStatus({ kind: "done", message: "Committed — live in ~2 minutes.", url: body.commitUrl });
+      setStatus({
+        kind: "done",
+        message: publishAt
+          ? `Scheduled for ${formatWhen(publishAt)} — it goes live on the first rebuild after that.`
+          : "Committed — live in ~2 minutes.",
+        url: body.commitUrl,
+      });
+      setPublished({
+        title: draft.title,
+        excerpt: draft.excerpt,
+        // Canonical URL, not the current origin — a post published from
+        // localhost still needs a shareable link.
+        url: `${SITE_URL}/writing/${slug}`,
+        tags: draft.tags.split(",").map((t) => t.trim()).filter(Boolean),
+      });
       setImages([]);
       void loadPosts();
     } catch (error) {
@@ -423,6 +476,35 @@ export function Editor() {
           />
         </div>
 
+        <div className="flex flex-wrap items-center gap-3 mb-4 rounded-xl border border-border bg-surface px-4 py-3">
+          <label htmlFor="schedule" className="inline-flex items-center gap-2 text-sm text-text-secondary">
+            <CalendarClock className="w-4 h-4 text-text-muted" />
+            Schedule
+          </label>
+          <input
+            id="schedule"
+            type="datetime-local"
+            value={draft.scheduleAt}
+            onChange={(event) => setDraft((d) => ({ ...d, scheduleAt: event.target.value }))}
+            className="px-3 py-1.5 rounded-lg bg-bg border border-border text-sm font-mono input-glow"
+          />
+          {draft.scheduleAt ? (
+            <>
+              <span className="text-xs text-text-muted">
+                Commits now, appears at the first rebuild after this time (checked hourly).
+              </span>
+              <button
+                onClick={() => setDraft((d) => ({ ...d, scheduleAt: "" }))}
+                className="text-xs text-text-muted hover:text-text-primary transition-colors focus-ring rounded-sm"
+              >
+                Clear
+              </button>
+            </>
+          ) : (
+            <span className="text-xs text-text-muted">Leave empty to publish immediately.</span>
+          )}
+        </div>
+
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border bg-surface overflow-hidden flex flex-col">
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
@@ -521,6 +603,56 @@ export function Editor() {
           )}
         </div>
 
+        {published && (
+          <section className="mt-8 rounded-2xl border border-accent/30 bg-surface p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <LinkedInIcon className="w-4 h-4 text-accent" />
+              <h2 className="font-display text-lg">Share it on LinkedIn</h2>
+            </div>
+            <p className="text-sm text-text-secondary mb-4">
+              Paste this over there, then drop the LinkedIn post URL back in the field above
+              and republish — the article will link to the discussion.
+            </p>
+
+            <textarea
+              readOnly
+              value={linkedInDraft(published.title, published.excerpt, published.url, published.tags)}
+              className="w-full min-h-[9rem] px-4 py-3 rounded-xl bg-bg border border-border text-sm leading-relaxed resize-y outline-none"
+            />
+
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <button
+                onClick={async () => {
+                  await navigator.clipboard.writeText(
+                    linkedInDraft(published.title, published.excerpt, published.url, published.tags)
+                  );
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium btn-sheen focus-ring"
+              >
+                {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? "Copied" : "Copy post text"}
+              </button>
+              <a
+                href="https://www.linkedin.com/feed/?shareActive=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Open LinkedIn
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+              <button
+                onClick={() => setPublished(null)}
+                className="ml-auto text-xs text-text-muted hover:text-text-primary transition-colors focus-ring rounded-sm"
+              >
+                Dismiss
+              </button>
+            </div>
+          </section>
+        )}
+
         <section className="mt-14">
           <h2 className="font-display text-xl mb-4">Published posts</h2>
           <div className="space-y-2">
@@ -534,19 +666,29 @@ export function Editor() {
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{post.title}</p>
+                    <p className="text-sm font-medium truncate">
+                      {post.title}
+                      {post.live === false && (
+                        <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-muted text-accent text-[10px] font-mono align-middle">
+                          <CalendarClock className="w-3 h-3" />
+                          scheduled
+                        </span>
+                      )}
+                    </p>
                     <p className="text-xs font-mono text-text-muted">
-                      {post.slug} · {post.date}
+                      {post.slug} · {post.publishAt ? formatWhen(post.publishAt) : post.date}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    <Link
-                      href={`/writing/${post.slug}`}
-                      target="_blank"
-                      className="text-xs text-text-muted hover:text-text-primary transition-colors"
-                    >
-                      View
-                    </Link>
+                    {post.live !== false && (
+                      <Link
+                        href={`/writing/${post.slug}`}
+                        target="_blank"
+                        className="text-xs text-text-muted hover:text-text-primary transition-colors"
+                      >
+                        View
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         setConfirmSlug(confirmSlug === post.slug ? null : post.slug);

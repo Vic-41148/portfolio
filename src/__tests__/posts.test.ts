@@ -2,12 +2,14 @@ import { describe, it, expect } from "vitest";
 import {
   buildMarkdownFile,
   formatDate,
+  isLive,
   isValidSlug,
   parseFrontmatter,
   slugify,
 } from "@/lib/frontmatter";
 import { getPost, getPosts } from "@/lib/posts";
 import { estimateReadTime } from "@/lib/markdown";
+import { linkedInDraft } from "@/lib/share";
 
 describe("parseFrontmatter", () => {
   it("splits frontmatter from body", () => {
@@ -134,5 +136,70 @@ describe("post loading", () => {
   it("returns undefined for unknown or traversing slugs", () => {
     expect(getPost("nope")).toBeUndefined();
     expect(getPost("../../package")).toBeUndefined();
+  });
+});
+
+describe("scheduling", () => {
+  it("treats a post with no publishAt as live", () => {
+    expect(isLive(undefined)).toBe(true);
+  });
+
+  it("hides a post until its publishAt passes", () => {
+    const future = new Date(Date.now() + 60_000).toISOString();
+    const past = new Date(Date.now() - 60_000).toISOString();
+
+    expect(isLive(future)).toBe(false);
+    expect(isLive(past)).toBe(true);
+  });
+
+  it("falls back to live on an unparseable date rather than hiding forever", () => {
+    expect(isLive("not-a-date")).toBe(true);
+  });
+
+  it("round-trips publishAt through the file format", () => {
+    const at = "2026-08-01T03:30:00.000Z";
+    const file = buildMarkdownFile(
+      { title: "T", excerpt: "", date: "2026-08-01", readTime: "1 min", tags: [], publishAt: at },
+      "body"
+    );
+
+    expect(parseFrontmatter(file).data.publishAt).toBe(at);
+  });
+
+  it("omits publishAt when the post is immediate", () => {
+    const file = buildMarkdownFile(
+      { title: "T", excerpt: "", date: "2026-08-01", readTime: "1 min", tags: [] },
+      "body"
+    );
+
+    expect(file).not.toContain("publishAt:");
+  });
+});
+
+describe("linkedInDraft", () => {
+  it("builds a plain-text post with the link and hashtags", () => {
+    const text = linkedInDraft(
+      "Teaching a CV Model in Your Browser",
+      "How hand landmarks + a KNN classifier learn gestures in seconds.",
+      "https://adityashibu.dev/writing/on-device-transfer-learning",
+      ["CV", "Web ML"]
+    );
+
+    expect(text).toContain("Teaching a CV Model in Your Browser");
+    expect(text).toContain("Full post: https://adityashibu.dev/writing/on-device-transfer-learning");
+    expect(text).toContain("#CV #WebML");
+    expect(text).not.toContain("**");
+  });
+
+  it("drops the hashtag line when there are no tags", () => {
+    const text = linkedInDraft("Title", "Excerpt", "https://example.com/x", []);
+
+    expect(text.endsWith("Full post: https://example.com/x")).toBe(true);
+  });
+
+  it("collapses the gap when the excerpt is empty", () => {
+    const text = linkedInDraft("Title", "", "https://example.com/x", []);
+
+    expect(text).toBe("Title\n\nFull post: https://example.com/x");
   });
 });
