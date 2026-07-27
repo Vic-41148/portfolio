@@ -34,7 +34,7 @@
 		{
 			"binding": "DB",
 			"database_name": "portfolio-subscribers",
-			"database_id": "PLACEHOLDER_RUN_WRANGLER_D1_CREATE",
+			"database_id": "f2beb358-bebd-458c-aeeb-d6a6207bd090",
 			"migrations_dir": "migrations"
 		}
 	]
