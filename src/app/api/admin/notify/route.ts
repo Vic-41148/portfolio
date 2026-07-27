@@ -4,7 +4,7 @@ import { authorize } from "@/lib/admin-auth";
 import { CONTACT_FROM } from "@/lib/constants";
 import { postAnnouncementEmail, unsubscribeUrl } from "@/lib/emails";
 import { isValidSlug } from "@/lib/frontmatter";
-import { getDb, listActive } from "@/lib/subscribers";
+import { getDb, getSecret, listActive } from "@/lib/subscribers";
 
 export const runtime = "nodejs";
 
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Subscriptions aren't configured." }, { status: 503 });
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = await getSecret("RESEND_API_KEY");
   if (!apiKey) {
     return NextResponse.json({ error: "Email isn't configured." }, { status: 503 });
   }

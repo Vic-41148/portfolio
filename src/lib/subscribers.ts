@@ -25,6 +25,22 @@ export async function getDb(): Promise<D1Database | null> {
   }
 }
 
+/** Reads a secret from the Workers env, falling back to process.env.
+ *
+ *  Route handlers see secrets on process.env, but a server component rendering
+ *  on Workers may not — which is why the welcome email silently never sent
+ *  while the confirmation email from the API route worked fine. */
+export async function getSecret(name: string): Promise<string | undefined> {
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    const value = (env as unknown as Record<string, unknown>)[name];
+    if (typeof value === "string" && value.length > 0) return value;
+  } catch {
+    /* not running on Workers */
+  }
+  return process.env[name] || undefined;
+}
+
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
