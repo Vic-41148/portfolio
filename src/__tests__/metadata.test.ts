@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import sitemap from "@/app/sitemap";
+import { PROJECTS } from "@/lib/projects";
+import { getPosts } from "@/lib/posts";
 import robots from "@/app/robots";
 import manifest from "@/app/manifest";
 
@@ -12,10 +14,23 @@ describe("sitemap", () => {
 
     for (const entry of entries) {
       expect(entry.url).toMatch(/^https:\/\/adityashibu\.com/);
-      expect(entry.lastModified).toBeInstanceOf(Date);
       expect(entry.priority).toBeGreaterThanOrEqual(0);
       expect(entry.priority).toBeLessThanOrEqual(1);
+      // Only set where a real date exists — a build-time stamp would claim
+      // every page changed on every deploy.
+      if (entry.lastModified !== undefined) {
+        expect(entry.lastModified).toBeInstanceOf(Date);
+      }
     }
+  });
+
+  it("dates posts but not case studies", () => {
+    const entries = sitemap();
+    const post = entries.find((e) => e.url.includes("/writing/building-a-game-boy-emulator"));
+    const project = entries.find((e) => e.url.includes("/work/codeshield"));
+
+    expect(post!.lastModified).toBeInstanceOf(Date);
+    expect(project!.lastModified).toBeUndefined();
   });
 
   it("has the root URL with priority 1", () => {
@@ -27,15 +42,20 @@ describe("sitemap", () => {
     expect(root!.changeFrequency).toBe("monthly");
   });
 
-  it("includes all work pages", () => {
-    const entries = sitemap();
-    const urls = entries.map((e) => e.url);
+  it("lists every case study, derived rather than hand-listed", () => {
+    const urls = sitemap().map((e) => e.url);
 
-    expect(urls).toContain("https://adityashibu.com/work/webcam-transfer-learning");
-    expect(urls).toContain("https://adityashibu.com/work/secure-llm-inference-platform");
-    expect(urls).toContain("https://adityashibu.com/work/codeshield");
-    expect(urls).toContain("https://adityashibu.com/work/game-boy-emulator");
-    expect(urls).toContain("https://adityashibu.com/work/primetrade-mlops");
+    for (const slug of Object.keys(PROJECTS)) {
+      expect(urls).toContain(`https://adityashibu.com/work/${slug}`);
+    }
+  });
+
+  it("lists every published post", () => {
+    const urls = sitemap().map((e) => e.url);
+
+    for (const post of getPosts()) {
+      expect(urls).toContain(`https://adityashibu.com/writing/${post.slug}`);
+    }
   });
 });
 
