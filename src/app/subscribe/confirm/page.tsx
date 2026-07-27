@@ -4,7 +4,7 @@ import { Check, X } from "lucide-react";
 import { Resend } from "resend";
 import { CONTACT_FROM } from "@/lib/constants";
 import { welcomeEmail } from "@/lib/emails";
-import { confirmByToken, getDb } from "@/lib/subscribers";
+import { confirmByToken, getDb, getSecret } from "@/lib/subscribers";
 
 export const metadata: Metadata = {
   title: "Confirm subscription",
@@ -36,10 +36,10 @@ export default async function ConfirmPage({
         state = "ok";
         // Welcome mail doubles as proof the address works and carries the
         // unsubscribe link from the first message onward.
-        const apiKey = process.env.RESEND_API_KEY;
+        const apiKey = await getSecret("RESEND_API_KEY");
         if (apiKey) {
           const mail = welcomeEmail(confirmed.unsubToken);
-          await new Resend(apiKey).emails
+          const { error } = await new Resend(apiKey).emails
             .send({
               from: CONTACT_FROM,
               to: confirmed.email,
@@ -47,9 +47,13 @@ export default async function ConfirmPage({
               html: mail.html,
               text: mail.text,
             })
-            .catch(() => {
-              /* the subscription is already saved; a failed welcome isn't fatal */
-            });
+            // The subscription is already saved, so a failed welcome isn't
+            // fatal — but it must not vanish silently either.
+            .catch((cause) => ({ error: cause as Error }));
+
+          if (error) console.error("welcome email failed:", error);
+        } else {
+          console.error("welcome email skipped: RESEND_API_KEY unavailable");
         }
       }
     }

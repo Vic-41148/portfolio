@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { CONTACT_FROM } from "@/lib/constants";
 import { confirmEmail } from "@/lib/emails";
-import { getDb, isValidEmail, normalizeEmail, upsertPending } from "@/lib/subscribers";
+import { getDb, getSecret, isValidEmail, normalizeEmail, upsertPending } from "@/lib/subscribers";
 
 export const runtime = "nodejs";
 
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = await getSecret("RESEND_API_KEY");
   if (!apiKey) {
     return NextResponse.json({ error: "Email isn't configured on this deployment." }, { status: 503 });
   }
