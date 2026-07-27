@@ -13,7 +13,11 @@ function escapeHtml(str: string) {
 
 export async function POST(request: Request) {
   try {
-    const { name, email, message } = await request.json();
+    const { name, email, message } = (await request.json()) as {
+      name?: string;
+      email?: string;
+      message?: string;
+    };
 
     if (!name || !email || !message) {
       return NextResponse.json(

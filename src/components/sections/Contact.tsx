@@ -53,7 +53,7 @@ export function Contact() {
       });
 
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
+        const body = (await res.json().catch(() => null)) as { error?: string } | null;
         throw new Error(body?.error || "Something went wrong");
       }
 
