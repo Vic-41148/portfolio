@@ -26,7 +26,7 @@ const QUESTS = [
     items: [
       {
         title: "Averix ERP & Web Projects",
-        description: "A collection of internal ERP systems (Averix ERP, Classics Express) and client-facing Astro/HTML sites (VISA WEB, Immigration) built during my internship at Averix Global Tech.",
+        description: "Served as Project Lead and the backend/quality backbone for a suite of internal ERP systems (Averix ERP, Classics Express) and client-facing Astro/HTML sites (VISA WEB, Immigration) built during my internship at Averix Global Tech.",
         href: "/side-quests/averix-web",
         icon: GitPullRequest,
         internal: true,

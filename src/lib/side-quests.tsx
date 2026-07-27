@@ -149,7 +149,7 @@ export const SIDE_QUESTS: Record<string, SideQuest> = {
       <>
         <h2 className="text-xl font-display font-semibold mt-8 mb-4">The Work</h2>
         <p className="mb-4 text-text-secondary leading-relaxed">
-          As part of my internship at Averix Global Tech, I contributed to and led the development of several internal tools and client-facing web applications. Operating within a private GitHub organization meant rapidly switching contexts between different codebases and tech stacks.
+          As part of my internship at Averix Global Tech, I wasn't just contributing — I was the Project Lead and the backbone for the backend architecture and quality control across multiple client-facing and internal applications. Operating within a fast-paced environment meant rapidly switching contexts between different codebases and tech stacks, ensuring everything we shipped was robust and scalable.
         </p>
 
         <h2 className="text-xl font-display font-semibold mt-8 mb-4">Featured Projects</h2>

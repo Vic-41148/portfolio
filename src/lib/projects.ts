@@ -26,7 +26,7 @@ export const PROJECTS: Record<string, Project> = {
     outcome: ["Full POS ecosystem", "Offline-first capability", "Built-in loyalty program"],
     links: { github: "https://codeberg.org/averix-global-tech/retailforge", demo: "/downloads/RetailForge-Demo-1.0.0.exe" },
     tech: ["Tauri v2", "Rust", "React 19", "SQLite", "TypeScript"],
-    team: "Developed as part of my professional internship at Averix Global Tech.",
+    team: "I served as the Project Lead and the backbone for the backend and overall code quality during my internship at Averix Global Tech.",
     decision: "Tauri over Electron for the desktop shell. By using Rust for the backend and native system integrations, we massively reduced the memory footprint and bundle size. An offline-first approach using local SQLite ensures that intermittent internet connectivity never stops business operations.",
     architecture: "The application is split between a React 19 frontend and a Tauri (Rust) backend. It features barcode scanning, multi-tier pricing, GST calculations, and bill voiding with automatic stock restoration. The inventory module supports image galleries, variant matrices, and GRN tracking. I also built a self-hosted Ed25519 license key server (retailforge-keygen) in TypeScript to securely manage software activation.",
     results: "Delivered a fully functional production-ready POS system that modernizes retail operations while remaining resilient to network outages.",

@@ -24,7 +24,7 @@ const PREVIEW_QUESTS = [
   },
   {
     title: "Averix Web & ERP Projects",
-    description: "Internal ERP systems and client-facing Astro/HTML sites built during my internship at Averix Global Tech.",
+    description: "Served as Project Lead and the backend backbone for internal ERP systems and client-facing Astro sites at Averix Global Tech.",
     type: "Internship",
     icon: GitMerge,
     link: "/side-quests/averix-web",
