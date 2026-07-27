@@ -8,6 +8,7 @@ import { Reveal, MaskText } from "@/components/Reveal";
 import { Ghost } from "@/components/Ghost";
 import { motion, useInView } from "motion/react";
 import { useShortlist } from "@/lib/shortlist";
+import { GitHubIcon } from "@/components/icons";
 import { useDragScroll } from "@/lib/use-drag-scroll";
 
 const STOP_MOTION_FRAMES = [Cpu, Shield, Gamepad2, Gauge] as const;
@@ -54,8 +55,8 @@ const allProjects = [
     icon: Eye,
     chips: ["MediaPipe", "KNN", "WebGPU"],
     tint: "bg-accent/15",
-    href: "#demo",
-    external: false,
+    href: "/work/webcam-transfer-learning",
+    demo: "#demo",
     feature: true,
     difficulty: 3,
   },
@@ -67,8 +68,8 @@ const allProjects = [
     icon: Shield,
     chips: ["FastAPI", "DeBERTa", "Docker"],
     tint: "bg-demo-success/15",
-    href: "https://github.com/Vic-41148/secure-llm-inference-platform",
-    external: true,
+    href: "/work/secure-llm-inference-platform",
+    repo: "https://github.com/Vic-41148/secure-llm-inference-platform",
     meta: "217 rules · 14 categories",
     // TODO(real-cover): add a real architecture diagram (attack -> defense ->
     // eval flow) at /images/projects/secure-llm-arch.svg per handoff #3 B1
@@ -83,8 +84,8 @@ const allProjects = [
     icon: Cpu,
     chips: ["C", "Systems"],
     tint: "bg-demo-warning/12",
-    href: "https://github.com/Vic-41148/CodeShield-Distributed-Log-Anomaly-Detection-Engine",
-    external: true,
+    href: "/work/codeshield",
+    repo: "https://github.com/Vic-41148/CodeShield-Distributed-Log-Anomaly-Detection-Engine",
     meta: "ThinkFest 2026",
     // TODO(real-cover): replace with real architecture diagram (concurrent streams ->
     // 5-min sliding window -> anomaly flag) or terminal capture at
@@ -100,8 +101,8 @@ const allProjects = [
     chips: ["C++"],
     meta: "early WIP",
     tint: "bg-accent/10",
-    href: "https://github.com/Vic-41148/lint-game-boy-emu",
-    external: true,
+    href: "/work/game-boy-emulator",
+    repo: "https://github.com/Vic-41148/lint-game-boy-emu",
     // TODO(real-cover): replace with a real screenshot of a game running in the
     // emulator at /images/projects/emulator-shot.png per handoff #3 B1 row 04 —
     // the standout asset, get this one done first.
@@ -115,8 +116,8 @@ const allProjects = [
     icon: Gauge,
     chips: ["Python", "Docker", "MLOps"],
     tint: "bg-accent/10",
-    href: "https://github.com/Vic-41148/primetrade-mlops-round0",
-    external: true,
+    href: "/work/primetrade-mlops",
+    repo: "https://github.com/Vic-41148/primetrade-mlops-round0",
     // TODO(real-cover): replace with pipeline/observability screenshot or flow
     // diagram at /images/projects/mlops-arch.svg per handoff #3 B1 row 05.
     difficulty: 2,
@@ -124,10 +125,10 @@ const allProjects = [
 ];
 
 function ProductCard({ project, index }: { project: typeof allProjects[number]; index: number }) {
-  const Component = project.external ? "a" : Link;
-  const linkProps = project.external
-    ? { href: project.href, target: "_blank", rel: "noopener noreferrer" as const }
-    : { href: project.href };
+  // Cards open the case study; the repo and demo are separate links inside, so
+  // clicking a project reads what you'd expect rather than leaving the site.
+  const repo = "repo" in project ? project.repo : undefined;
+  const demo = "demo" in project ? project.demo : undefined;
   const isSignature = index === 0;
   const { toggle, has } = useShortlist();
   const shortlisted = has(project.slug);
@@ -140,14 +141,20 @@ function ProductCard({ project, index }: { project: typeof allProjects[number]; 
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
       className="slider-item w-[19rem] sm:w-[22rem]"
     >
-      <Component
-        {...linkProps}
+      <div
         onMouseMove={trackSpotlight}
         className={cn(
           "group relative flex flex-col rounded-2xl border border-border overflow-hidden bg-elevated h-full",
           "card-hover card-feature card-accent-border card-spotlight"
         )}
       >
+        {/* Covers the card so the whole thing is one target, without wrapping
+            the source and demo links in an outer anchor. */}
+        <Link
+          href={project.href}
+          className="absolute inset-0 z-20 focus-ring rounded-2xl"
+          aria-label={`${project.title} — read the case study`}
+        />
         {/* Visual header area — the "product shot" */}
         <div className="relative h-44 sm:h-52 flex items-center justify-center overflow-hidden">
           <div className={cn("cover-zoom absolute inset-0", project.tint)} />
@@ -206,6 +213,34 @@ function ProductCard({ project, index }: { project: typeof allProjects[number]; 
           </div>
         </div>
 
+        <div className="relative z-30 flex items-center gap-3 px-5 sm:px-6 pb-3 -mt-1 pointer-events-none">
+          <span className="text-[11px] font-mono text-text-muted group-hover:text-accent transition-colors">
+            Read the case study
+          </span>
+          {/* Nested inside a Link, so these stop propagation rather than
+              letting the card navigation swallow the click. */}
+          {repo && (
+            <a
+              href={repo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-auto pointer-events-auto inline-flex items-center gap-1 text-[11px] font-mono text-text-muted hover:text-text-primary transition-colors"
+              aria-label={`${project.title} source on GitHub`}
+            >
+              <GitHubIcon className="w-3.5 h-3.5" />
+              Source
+            </a>
+          )}
+          {demo && (
+            <a
+              href={demo}
+              className="ml-auto pointer-events-auto inline-flex items-center gap-1 text-[11px] font-mono text-accent hover:brightness-110 transition-all"
+            >
+              Try it live
+            </a>
+          )}
+        </div>
+
         <motion.button
           onClick={(e) => {
             e.preventDefault();
@@ -217,7 +252,7 @@ function ProductCard({ project, index }: { project: typeof allProjects[number]; 
           whileTap={{ scale: 0.94 }}
           transition={{ type: "spring", stiffness: 500, damping: 22 }}
           className={cn(
-            "relative z-20 m-5 mt-0 sm:m-6 sm:mt-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider",
+            "relative z-30 m-5 mt-0 sm:m-6 sm:mt-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider",
             shortlisted ? "bg-demo-success text-demo-success-foreground" : "bg-text-primary text-bg hover:bg-accent hover:text-accent-foreground"
           )}
         >
@@ -229,7 +264,7 @@ function ProductCard({ project, index }: { project: typeof allProjects[number]; 
             "Add to shortlist"
           )}
         </motion.button>
-      </Component>
+      </div>
     </motion.div>
   );
 }
