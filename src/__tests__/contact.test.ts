@@ -24,7 +24,7 @@ describe("POST /api/contact", () => {
 
   it("returns 400 when name is missing", async () => {
     const res = await POST(makeRequest({ email: "a@b.com", message: "hi" }));
-    const json = await res.json();
+    const json = (await res.json()) as { error?: string; ok?: boolean };
 
     expect(res.status).toBe(400);
     expect(json.error).toMatch(/field is missing/i);
@@ -32,7 +32,7 @@ describe("POST /api/contact", () => {
 
   it("returns 400 when email is missing", async () => {
     const res = await POST(makeRequest({ name: "Test", message: "hi" }));
-    const json = await res.json();
+    const json = (await res.json()) as { error?: string; ok?: boolean };
 
     expect(res.status).toBe(400);
     expect(json.error).toMatch(/field is missing/i);
@@ -40,7 +40,7 @@ describe("POST /api/contact", () => {
 
   it("returns 400 when message is missing", async () => {
     const res = await POST(makeRequest({ name: "Test", email: "a@b.com" }));
-    const json = await res.json();
+    const json = (await res.json()) as { error?: string; ok?: boolean };
 
     expect(res.status).toBe(400);
     expect(json.error).toMatch(/field is missing/i);
@@ -54,7 +54,7 @@ describe("POST /api/contact", () => {
     });
 
     const res = await POST(req);
-    const json = await res.json();
+    const json = (await res.json()) as { error?: string; ok?: boolean };
 
     expect(res.status).toBe(400);
     expect(json.error).toBeDefined();
@@ -64,7 +64,7 @@ describe("POST /api/contact", () => {
     const res = await POST(
       makeRequest({ name: "Test", email: "not-an-email", message: "hi" })
     );
-    const json = await res.json();
+    const json = (await res.json()) as { error?: string; ok?: boolean };
 
     expect(res.status).toBe(400);
     expect(json.error).toMatch(/email.*doesn't look right/i);
@@ -76,7 +76,7 @@ describe("POST /api/contact", () => {
     const res = await POST(
       makeRequest({ name: "Test", email: "a@b.com", message: "hi" })
     );
-    const json = await res.json();
+    const json = (await res.json()) as { error?: string; ok?: boolean };
 
     expect(res.status).toBe(500);
     expect(json.error).toMatch(/email service/i);
@@ -86,7 +86,7 @@ describe("POST /api/contact", () => {
     const res = await POST(
       makeRequest({ name: "", email: "", message: "" })
     );
-    const json = await res.json();
+    const json = (await res.json()) as { error?: string; ok?: boolean };
 
     expect(res.status).toBe(400);
     expect(json.error).toMatch(/field is missing/i);
@@ -96,7 +96,7 @@ describe("POST /api/contact", () => {
     const res = await POST(
       makeRequest({ name: "Test", email: "user@localhost", message: "hi" })
     );
-    const json = await res.json();
+    const json = (await res.json()) as { error?: string; ok?: boolean };
 
     expect(res.status).toBe(400);
     expect(json.error).toMatch(/email.*doesn't look right/i);

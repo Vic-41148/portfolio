@@ -25,5 +25,17 @@
 	"vars": {
 		"GITHUB_REPO": "Vic-41148/portfolio",
 		"GITHUB_BRANCH": "main"
-	}
+	},
+	// Newsletter subscribers. Create with:
+	//   npx wrangler d1 create portfolio-subscribers
+	// then paste the returned database_id below and apply the migration:
+	//   npx wrangler d1 migrations apply portfolio-subscribers --remote
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "portfolio-subscribers",
+			"database_id": "PLACEHOLDER_RUN_WRANGLER_D1_CREATE",
+			"migrations_dir": "migrations"
+		}
+	]
 }

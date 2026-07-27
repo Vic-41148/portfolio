@@ -28,6 +28,7 @@ export async function GET(request: Request) {
           slug,
           title: data.title ?? slug,
           date: data.date ?? "",
+          excerpt: data.excerpt ?? "",
           sha: file.sha,
           ...(data.publishAt ? { publishAt: data.publishAt } : {}),
           live: isLive(data.publishAt),

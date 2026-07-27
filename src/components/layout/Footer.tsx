@@ -15,27 +15,28 @@ export function Footer() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<SignupState>("idle");
 
+  const [error, setError] = useState("");
+
   const handleSignup = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setState("sending");
+    setError("");
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "Newsletter signup",
-          email,
-          message: `New footer signup requesting updates: ${email}`,
-        }),
+        body: JSON.stringify({ email }),
       });
-      if (!res.ok) throw new Error("Failed");
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) throw new Error(body.error ?? "Signup failed");
       setState("success");
       setEmail("");
-      setTimeout(() => setState("idle"), 3000);
+      // Long enough to actually read "check your inbox" before it resets.
+      setTimeout(() => setState("idle"), 8000);
     } catch (err) {
-      console.error("Newsletter signup failed:", err);
+      setError(err instanceof Error ? err.message : "Signup failed");
       setState("error");
-      setTimeout(() => setState("idle"), 3000);
+      setTimeout(() => setState("idle"), 5000);
     }
   }, [email]);
 
@@ -49,7 +50,11 @@ export function Footer() {
                 Get pinged when I ship something new.
               </p>
               <p className="text-sm text-text-secondary">
-                No spam, no newsletter platform — it just emails me and I&apos;ll follow up.
+                {state === "success"
+                  ? "Check your inbox — confirm the link and you're on the list."
+                  : state === "error"
+                    ? error
+                    : "New posts only. One click to unsubscribe, in every email."}
               </p>
             </div>
             <form onSubmit={handleSignup} className="flex gap-2.5">
@@ -71,7 +76,7 @@ export function Footer() {
                 className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-accent text-accent-foreground text-sm font-bold uppercase tracking-wide hover:brightness-110 disabled:cursor-not-allowed"
               >
                 {state === "success" ? (
-                  <>You&apos;re in <Check className="w-4 h-4" /></>
+                  <>Check your inbox <Check className="w-4 h-4" /></>
                 ) : state === "sending" ? (
                   "..."
                 ) : state === "error" ? (

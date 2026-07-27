@@ -93,6 +93,31 @@ Run workflow) to release anything that's due right now.
 Because the repo is public, a scheduled post's text is visible in git before it
 goes live. Scheduling controls *when it appears on the site*, not secrecy.
 
+### Newsletter
+
+Signups are stored in Cloudflare D1 with double opt-in: the form only creates a
+pending row and emails a confirmation link, so someone typing a stranger's
+address in can't subscribe them. Every email after that carries a one-click
+unsubscribe link and the `List-Unsubscribe` header Gmail and Outlook look for.
+
+The editor shows the confirmed count and, next to each published post, a
+**Notify** button that emails the list about it.
+
+Setup (one time):
+
+```bash
+npx wrangler d1 create portfolio-subscribers   # copy the database_id it prints
+# paste that id into wrangler.jsonc (replacing PLACEHOLDER_RUN_WRANGLER_D1_CREATE)
+npx wrangler d1 migrations apply portfolio-subscribers --remote
+```
+
+Until that's done the signup form reports that subscriptions aren't available
+rather than failing silently — nothing else on the site is affected.
+
+Sending is capped at 90 emails per announcement, just under Resend's free tier
+limit of 100/day. Past that the notify button refuses rather than half-sending;
+raise `DAILY_SEND_CAP` once the email plan allows it.
+
 ### Sharing to LinkedIn
 
 Publishing doesn't post to LinkedIn — it hands you the text to paste. After a

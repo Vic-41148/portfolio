@@ -42,9 +42,10 @@ describe("sitemap", () => {
 describe("robots", () => {
   it("returns rules allowing all user agents", () => {
     const result = robots();
+    const rules = Array.isArray(result.rules) ? result.rules[0] : result.rules;
 
-    expect(result.rules.userAgent).toBe("*");
-    expect(result.rules.allow).toBe("/");
+    expect(rules.userAgent).toBe("*");
+    expect(rules.allow).toBe("/");
   });
 
   it("includes a sitemap URL", () => {

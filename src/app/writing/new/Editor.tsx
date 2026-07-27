@@ -12,9 +12,11 @@ import {
   ImagePlus,
   Loader2,
   Lock,
+  Send,
   LogOut,
   Trash2,
   Upload,
+  Users,
 } from "lucide-react";
 import { Markdown, estimateReadTime } from "@/lib/markdown";
 import { LinkedInIcon } from "@/components/icons";
@@ -40,6 +42,13 @@ interface ListedPost {
   date: string;
   publishAt?: string;
   live?: boolean;
+  excerpt?: string;
+}
+
+interface SubscriberCounts {
+  active: number;
+  pending: number;
+  unsubscribed: number;
 }
 
 interface Draft {
@@ -152,6 +161,8 @@ export function Editor() {
     tags: string[];
   } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [subscribers, setSubscribers] = useState<SubscriberCounts | null>(null);
+  const [notifying, setNotifying] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const slugRef = useRef("");
 
@@ -203,9 +214,48 @@ export function Editor() {
     }
   }, [authedFetch]);
 
+  const loadSubscribers = useCallback(async () => {
+    try {
+      const res = await authedFetch("/api/admin/subscribers");
+      if (res.ok) setSubscribers((await res.json()) as SubscriberCounts);
+    } catch {
+      /* subscriber counts are informational; the editor works without them */
+    }
+  }, [authedFetch]);
+
   useEffect(() => {
-    if (session) void loadPosts();
-  }, [session, loadPosts]);
+    if (session) {
+      void loadPosts();
+      void loadSubscribers();
+    }
+  }, [session, loadPosts, loadSubscribers]);
+
+  const notify = async (post: ListedPost) => {
+    if (!subscribers?.active) return;
+    const ok = window.confirm(
+      `Email ${subscribers.active} subscriber${subscribers.active === 1 ? "" : "s"} about "${post.title}"? This can't be taken back.`
+    );
+    if (!ok) return;
+
+    setNotifying(post.slug);
+    setStatus({ kind: "busy", message: `Emailing subscribers about "${post.title}"…` });
+    try {
+      const res = await authedFetch("/api/admin/notify", {
+        method: "POST",
+        body: JSON.stringify({ slug: post.slug, title: post.title, excerpt: post.excerpt ?? "" }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { error?: string; sent?: number; failed?: number };
+      if (!res.ok) throw new Error(body.error ?? "Sending failed.");
+      setStatus({
+        kind: "done",
+        message: `Sent to ${body.sent ?? 0} subscriber${body.sent === 1 ? "" : "s"}${body.failed ? `, ${body.failed} failed` : ""}.`,
+      });
+    } catch (error) {
+      setStatus({ kind: "error", message: error instanceof Error ? error.message : "Sending failed." });
+    } finally {
+      setNotifying(null);
+    }
+  };
 
   const handleSignIn = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -654,7 +704,16 @@ export function Editor() {
         )}
 
         <section className="mt-14">
-          <h2 className="font-display text-xl mb-4">Published posts</h2>
+          <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
+            <h2 className="font-display text-xl">Published posts</h2>
+            {subscribers && (
+              <p className="inline-flex items-center gap-1.5 text-xs font-mono text-text-muted">
+                <Users className="w-3.5 h-3.5" />
+                {subscribers.active} subscriber{subscribers.active === 1 ? "" : "s"}
+                {subscribers.pending > 0 && ` · ${subscribers.pending} unconfirmed`}
+              </p>
+            )}
+          </div>
           <div className="space-y-2">
             {posts.length === 0 && (
               <p className="text-sm text-text-muted">No posts found in the repo yet.</p>
@@ -688,6 +747,17 @@ export function Editor() {
                       >
                         View
                       </Link>
+                    )}
+                    {post.live !== false && !!subscribers?.active && (
+                      <button
+                        onClick={() => void notify(post)}
+                        disabled={notifying !== null}
+                        className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-accent transition-colors disabled:opacity-40 focus-ring rounded-sm"
+                        title={`Email ${subscribers.active} subscribers about this post`}
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        {notifying === post.slug ? "Sending…" : "Notify"}
+                      </button>
                     )}
                     <button
                       onClick={() => {
