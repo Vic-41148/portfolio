@@ -34,7 +34,7 @@
 		{
 			"binding": "DB",
 			"database_name": "portfolio-subscribers",
-			"database_id": "f2beb358-bebd-458c-aeeb-d6a6207bd090",
+			"database_id": "a3a5390d-2551-4fac-8e45-e2f06ae39dd8",
 			"migrations_dir": "migrations"
 		}
 	]
