@@ -2,8 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Check, X } from "lucide-react";
 import { Resend } from "resend";
-import { CONTACT_FROM } from "@/lib/constants";
-import { welcomeEmail } from "@/lib/emails";
+import { CONTACT_FROM, CONTACT_RECIPIENT } from "@/lib/constants";
+import { unsubscribeUrl, welcomeEmail } from "@/lib/emails";
 import { confirmByToken, getDb, getSecret } from "@/lib/subscribers";
 
 export const metadata: Metadata = {
@@ -46,6 +46,13 @@ export default async function ConfirmPage({
               subject: mail.subject,
               html: mail.html,
               text: mail.text,
+              replyTo: CONTACT_RECIPIENT,
+              headers: {
+                // Gmail and Outlook look for these on anything list-shaped.
+                // Without them a legitimate newsletter reads as bulk mail.
+                "List-Unsubscribe": `<${unsubscribeUrl(confirmed.unsubToken)}>`,
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+              },
             })
             // The subscription is already saved, so a failed welcome isn't
             // fatal — but it must not vanish silently either.
