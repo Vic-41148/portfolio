@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Send, Check, Mail, Sun, Moon, FileText } from "lucide-react";
 import { cn, trackSpotlight } from "@/lib/utils";
 import { Reveal, StaggerReveal, StaggerItem, MaskText } from "@/components/Reveal";
@@ -9,6 +9,7 @@ import { motion } from "motion/react";
 import { useTheme } from "@/lib/theme";
 import { CONTACT_EMAIL } from "@/lib/constants";
 import { GitHubIcon, LinkedInIcon } from "@/components/icons";
+import { CONTACT_INTENT_EVENT, type ContactIntent } from "@/lib/contact-intent";
 
 type SubmitState = "idle" | "sending" | "success" | "error";
 
@@ -17,6 +18,28 @@ export function Contact() {
   const [errorMsg, setErrorMsg] = useState("");
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const { theme, toggle } = useTheme();
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+
+  // The engagement cards send you here with the intent already written. Only
+  // fill an untouched message so a half-typed one is never clobbered, and put
+  // the caret at the end so you continue rather than overwrite.
+  useEffect(() => {
+    const onIntent = (event: Event) => {
+      const { message } = (event as CustomEvent<ContactIntent>).detail;
+
+      setFormData((current) => (current.message.trim() ? current : { ...current, message }));
+
+      window.setTimeout(() => {
+        const el = messageRef.current;
+        if (!el) return;
+        el.focus({ preventScroll: true });
+        el.setSelectionRange(el.value.length, el.value.length);
+      }, 700);
+    };
+
+    window.addEventListener(CONTACT_INTENT_EVENT, onIntent);
+    return () => window.removeEventListener(CONTACT_INTENT_EVENT, onIntent);
+  }, []);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,6 +118,7 @@ export function Contact() {
               </div>
 
               <textarea
+                ref={messageRef}
                 id="message"
                 required
                 aria-label="Your message"

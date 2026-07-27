@@ -9,8 +9,13 @@ import { useScroll } from "@/lib/use-scroll";
 import { useTheme } from "@/lib/theme";
 import { useShortlist } from "@/lib/shortlist";
 import { motion, AnimatePresence } from "motion/react";
-import Lenis from "lenis";
 import { GitHubIcon, LinkedInIcon } from "@/components/icons";
+import { scrollToId } from "@/lib/contact-intent";
+
+function scrollToHash(href: string) {
+  const hash = href.split("#")[1];
+  if (hash) scrollToId(hash);
+}
 
 const links = [
   { href: "/#work", label: "Work" },
@@ -18,21 +23,6 @@ const links = [
   { href: "/#about", label: "About" },
   { href: "/resume.pdf", label: "R\u00e9sum\u00e9" },
 ];
-
-function scrollToHash(href: string) {
-  if (!href.includes("#")) return;
-  const hash = href.split("#")[1];
-  if (!hash) return;
-  const el = document.getElementById(hash);
-  if (!el) return;
-
-  const lenisInstance = (window as unknown as { __lenis?: Lenis }).__lenis;
-  if (lenisInstance) {
-    lenisInstance.scrollTo(el, { offset: -80, duration: 1.2 });
-  } else {
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-}
 
 export function Nav() {
   const pathname = usePathname();
