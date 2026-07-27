@@ -181,12 +181,12 @@ describe("linkedInDraft", () => {
     const text = linkedInDraft(
       "Teaching a CV Model in Your Browser",
       "How hand landmarks + a KNN classifier learn gestures in seconds.",
-      "https://adityashibu.dev/writing/on-device-transfer-learning",
+      "https://adityashibu.com/writing/on-device-transfer-learning",
       ["CV", "Web ML"]
     );
 
     expect(text).toContain("Teaching a CV Model in Your Browser");
-    expect(text).toContain("Full post: https://adityashibu.dev/writing/on-device-transfer-learning");
+    expect(text).toContain("Full post: https://adityashibu.com/writing/on-device-transfer-learning");
     expect(text).toContain("#CV #WebML");
     expect(text).not.toContain("**");
   });

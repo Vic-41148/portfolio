@@ -11,7 +11,7 @@ describe("sitemap", () => {
     expect(entries.length).toBeGreaterThan(0);
 
     for (const entry of entries) {
-      expect(entry.url).toMatch(/^https:\/\/adityashibu\.dev/);
+      expect(entry.url).toMatch(/^https:\/\/adityashibu\.com/);
       expect(entry.lastModified).toBeInstanceOf(Date);
       expect(entry.priority).toBeGreaterThanOrEqual(0);
       expect(entry.priority).toBeLessThanOrEqual(1);
@@ -20,7 +20,7 @@ describe("sitemap", () => {
 
   it("has the root URL with priority 1", () => {
     const entries = sitemap();
-    const root = entries.find((e) => e.url === "https://adityashibu.dev");
+    const root = entries.find((e) => e.url === "https://adityashibu.com");
 
     expect(root).toBeDefined();
     expect(root!.priority).toBe(1);
@@ -31,11 +31,11 @@ describe("sitemap", () => {
     const entries = sitemap();
     const urls = entries.map((e) => e.url);
 
-    expect(urls).toContain("https://adityashibu.dev/work/webcam-transfer-learning");
-    expect(urls).toContain("https://adityashibu.dev/work/secure-llm-inference-platform");
-    expect(urls).toContain("https://adityashibu.dev/work/codeshield");
-    expect(urls).toContain("https://adityashibu.dev/work/game-boy-emulator");
-    expect(urls).toContain("https://adityashibu.dev/work/primetrade-mlops");
+    expect(urls).toContain("https://adityashibu.com/work/webcam-transfer-learning");
+    expect(urls).toContain("https://adityashibu.com/work/secure-llm-inference-platform");
+    expect(urls).toContain("https://adityashibu.com/work/codeshield");
+    expect(urls).toContain("https://adityashibu.com/work/game-boy-emulator");
+    expect(urls).toContain("https://adityashibu.com/work/primetrade-mlops");
   });
 });
 
@@ -51,7 +51,7 @@ describe("robots", () => {
   it("includes a sitemap URL", () => {
     const result = robots();
 
-    expect(result.sitemap).toBe("https://adityashibu.dev/sitemap.xml");
+    expect(result.sitemap).toBe("https://adityashibu.com/sitemap.xml");
   });
 });
 

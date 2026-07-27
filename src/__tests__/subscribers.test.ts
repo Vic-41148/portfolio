@@ -66,7 +66,7 @@ describe("emails", () => {
     );
 
     expect(mail.subject).toBe("A Post");
-    expect(mail.html).toContain("https://adityashibu.dev/writing/a-post");
+    expect(mail.html).toContain("https://adityashibu.com/writing/a-post");
     expect(mail.html).toContain(unsubscribeUrl("unsub456"));
   });
 

@@ -36,7 +36,7 @@ describe("buildShortlistMailto", () => {
     const result = buildShortlistMailto(items);
     const decoded = decodeURIComponent(result);
 
-    expect(decoded).toContain("https://adityashibu.dev/work/x");
+    expect(decoded).toContain("https://adityashibu.com/work/x");
   });
 
   it("handles empty items array", () => {
@@ -55,8 +55,8 @@ describe("buildShortlistMessage", () => {
       { slug: "b", title: "Beta", href: "/work/b" },
     ]);
 
-    expect(message).toContain("Alpha — https://adityashibu.dev/work/a");
-    expect(message).toContain("Beta — https://adityashibu.dev/work/b");
+    expect(message).toContain("Alpha — https://adityashibu.com/work/a");
+    expect(message).toContain("Beta — https://adityashibu.com/work/b");
   });
 
   it("leaves a prompt for the sender to continue", () => {

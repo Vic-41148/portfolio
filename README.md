@@ -35,7 +35,7 @@ See `.env.example` for required variables:
 
 | Variable | Purpose |
 |----------|---------|
-| `NEXT_PUBLIC_SITE_URL` | Site URL (default: `https://adityashibu.dev`) |
+| `NEXT_PUBLIC_SITE_URL` | Site URL (default: `https://adityashibu.com`) |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Public contact email |
 | `CONTACT_EMAIL` | Recipient for contact form |
 | `CONTACT_FROM` | Resend sender address |
