@@ -64,13 +64,13 @@ const allProjects = [
     num: "02",
     slug: "secure-llm-inference-platform",
     title: "Neuro-Sentry — LLM Threat Detection",
-    description: "Red and blue team in one box: 217 regex rules + a fine-tuned DeBERTa v3 classifier stop prompt injection and jailbreaks in 8–13 ms. 91% accuracy, zero false negatives on the eval set. I led the team and built the full backend.",
+    description: "Red and blue team in one box: 217 regex rules + a fine-tuned DeBERTa v3 classifier stop prompt injection and jailbreaks. Evaluated against 150 unseen prompts (including 0-days) with 76% accuracy. I led the team and built the full backend.",
     icon: Shield,
     chips: ["FastAPI", "DeBERTa v3", "Groq API", "Docker"],
     tint: "bg-demo-success/15",
     href: "/work/secure-llm-inference-platform",
     repo: "https://github.com/Vic-41148/secure-llm-inference-platform",
-    meta: "91% acc · 0 false negatives",
+    meta: "76% acc on 150 prompts",
     // TODO(real-cover): add a real architecture diagram (attack -> defense ->
     // eval flow) at /images/projects/secure-llm-arch.svg per handoff #3 B1
     // row 02. Do not fabricate a screenshot.
