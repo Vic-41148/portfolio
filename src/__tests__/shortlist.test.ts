@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildShortlistMailto } from "@/lib/shortlist";
+import { buildShortlistMailto, buildShortlistMessage } from "@/lib/shortlist";
 import type { ShortlistItem } from "@/lib/shortlist";
 
 describe("buildShortlistMailto", () => {
@@ -44,6 +44,35 @@ describe("buildShortlistMailto", () => {
 
     expect(result).toMatch(/^mailto:/);
     const decoded = decodeURIComponent(result);
-    expect(decoded).toContain("I looked through your work");
+    expect(decoded).toContain("I'd like to talk about these");
+  });
+});
+
+describe("buildShortlistMessage", () => {
+  it("lists every project with an absolute link", () => {
+    const message = buildShortlistMessage([
+      { slug: "a", title: "Alpha", href: "/work/a" },
+      { slug: "b", title: "Beta", href: "/work/b" },
+    ]);
+
+    expect(message).toContain("Alpha — https://adityashibu.dev/work/a");
+    expect(message).toContain("Beta — https://adityashibu.dev/work/b");
+  });
+
+  it("leaves a prompt for the sender to continue", () => {
+    const message = buildShortlistMessage([
+      { slug: "a", title: "Alpha", href: "/work/a" },
+    ]);
+
+    expect(message.trimEnd().endsWith("What I'm working on:")).toBe(true);
+  });
+
+  it("is plain text — the contact form is not a mailto URL", () => {
+    const message = buildShortlistMessage([
+      { slug: "a", title: "Alpha", href: "/work/a" },
+    ]);
+
+    expect(message).not.toContain("%20");
+    expect(message).not.toMatch(/^mailto:/);
   });
 });

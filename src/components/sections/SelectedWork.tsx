@@ -129,7 +129,7 @@ function ProductCard({ project, index }: { project: typeof allProjects[number]; 
     ? { href: project.href, target: "_blank", rel: "noopener noreferrer" as const }
     : { href: project.href };
   const isSignature = index === 0;
-  const { add, has } = useShortlist();
+  const { toggle, has } = useShortlist();
   const shortlisted = has(project.slug);
 
   return (
@@ -209,11 +209,12 @@ function ProductCard({ project, index }: { project: typeof allProjects[number]; 
         <motion.button
           onClick={(e) => {
             e.preventDefault();
-            add({ slug: project.slug, title: project.title, href: project.href });
+            toggle({ slug: project.slug, title: project.title, href: project.href });
           }}
-          disabled={shortlisted}
-          whileHover={shortlisted ? undefined : { scale: 1.04 }}
-          whileTap={shortlisted ? undefined : { scale: 0.94 }}
+          aria-pressed={shortlisted}
+          title={shortlisted ? "Remove from shortlist" : "Add to shortlist"}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.94 }}
           transition={{ type: "spring", stiffness: 500, damping: 22 }}
           className={cn(
             "relative z-20 m-5 mt-0 sm:m-6 sm:mt-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider",
