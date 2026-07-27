@@ -190,6 +190,15 @@ Zero imports in source. MediaPipe uses its own backend.
 
 ---
 
+## 18. Missing RetailForge Assets (2)
+
+| File | Line / Usage | Issue |
+|------|--------------|-------|
+| `src/lib/projects.ts` | RetailForge demo link | `/downloads/RetailForge-Demo-1.0.0.exe` does not exist |
+| `SelectedWork.tsx` | RetailForge card | No cover image provided |
+
+---
+
 ## Summary
 
 | Category | Count |

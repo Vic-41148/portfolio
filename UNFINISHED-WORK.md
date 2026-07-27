@@ -167,6 +167,15 @@ A submission of `<script>alert(1)</script>` as the name would be embedded verbat
 
 ---
 
+## 16. Missing RetailForge Assets
+
+| Type | Asset | Notes |
+|------|-------|-------|
+| Cover Image | `/images/projects/retailforge-arch.svg` (or similar) | Added to Selected Work, currently uses tint fallback |
+| Demo Build | `/downloads/RetailForge-Demo-1.0.0.exe` | Linked in projects.ts but file does not exist in repo |
+
+---
+
 ## Summary
 
 | Category | Count | Severity |
