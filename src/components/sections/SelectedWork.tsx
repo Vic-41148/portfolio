@@ -80,7 +80,7 @@ const allProjects = [
     num: "03",
     slug: "codeshield",
     title: "CodeShield",
-    description: "A real-time distributed log anomaly-detection engine, written in raw C because I like pain — concurrent log streams, a 5-minute sliding window, anomalies flagged the moment they happen. Built for IBM ThinkFest 2026.",
+    description: "Real-time log anomaly detection in raw C. I built the detection half — scoring, sliding-window analysis, and alerting — the parts that decide what counts as an anomaly. Three-person build for IBM ThinkFest 2026.",
     icon: Cpu,
     chips: ["C", "Systems"],
     tint: "bg-demo-warning/12",
