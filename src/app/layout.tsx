@@ -48,6 +48,54 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: "/",
+  },
+};
+
+/** Person + WebSite structured data. Searching a name is an entity lookup, not
+ *  a keyword match — this is what lets Google tie the domain, the GitHub and
+ *  LinkedIn profiles, and the job title together as one person rather than
+ *  guessing from page text. */
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#person`,
+      name: "Aditya Shibu",
+      url: SITE_URL,
+      image: `${SITE_URL}/images/me/headshot.webp`,
+      jobTitle: "ML & Systems Engineer",
+      description:
+        "ML and systems engineer building on-device computer vision — models that run in the browser, at the edge, without a server.",
+      knowsAbout: [
+        "Machine Learning",
+        "Computer Vision",
+        "On-device Inference",
+        "C++",
+        "Systems Programming",
+        "LLM Security",
+      ],
+      sameAs: [
+        "https://github.com/Vic-41148",
+        "https://linkedin.com/in/adityashibu41148",
+      ],
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bangalore",
+        addressCountry: "IN",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "Aditya Shibu",
+      publisher: { "@id": `${SITE_URL}/#person` },
+      inLanguage: "en",
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -62,6 +110,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full bg-bg text-text-primary font-sans noise-overlay">
+        <script
+          type="application/ld+json"
+          // Built from a literal above, so there's no user input to escape.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <ThemeProvider>
           <ShortlistProvider>
             <SmoothScroll>

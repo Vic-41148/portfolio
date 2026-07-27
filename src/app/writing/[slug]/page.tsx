@@ -4,6 +4,7 @@ import { ArrowLeft, Calendar, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import { getPost } from "@/lib/posts";
 import { Markdown } from "@/lib/markdown";
+import { SITE_URL } from "@/lib/constants";
 
 /** Rendered per request rather than prerendered.
  *
@@ -21,9 +22,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = getPost(slug);
   if (!post) return { title: "Post Not Found" };
 
+  const description = post.excerpt || post.content.slice(0, 160).replace(/[#*\n]/g, "").trim();
+
   return {
     title: post.title,
-    description: post.excerpt || post.content.slice(0, 160).replace(/[#*\n]/g, "").trim(),
+    description,
+    alternates: { canonical: `/writing/${post.slug}` },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description,
+      url: `/writing/${post.slug}`,
+      publishedTime: post.date,
+      tags: post.tags,
+    },
   };
 }
 
@@ -33,8 +45,26 @@ export default async function WritingPostPage({ params }: { params: Promise<{ sl
 
   if (!post) notFound();
 
+  // Marks the page as an article authored by the same Person entity declared in
+  // the root layout, rather than a page that merely mentions a name.
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    author: { "@id": `${SITE_URL}/#person` },
+    publisher: { "@id": `${SITE_URL}/#person` },
+    mainEntityOfPage: `${SITE_URL}/writing/${post.slug}`,
+    keywords: post.tags.join(", "),
+  };
+
   return (
     <article className="pt-28 pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <div className="mx-auto max-w-3xl px-6">
         <Link
           href="/writing"
