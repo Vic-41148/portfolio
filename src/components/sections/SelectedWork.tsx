@@ -62,14 +62,14 @@ const allProjects = [
   {
     num: "02",
     slug: "secure-llm-inference-platform",
-    title: "Secure LLM Inference & Eval Platform",
-    description: "Throws prompt-injection and jailbreak attacks at LLMs until something breaks, then layers in defenses and measures — with numbers, not vibes — how well they actually hold.",
+    title: "Neuro-Sentry — LLM Threat Detection",
+    description: "Throws prompt-injection and jailbreak attacks at an LLM, then stops them: 217 rules feed a fine-tuned DeBERTa classifier, and everything gets scored, logged, and measured. Team project — I led it and built the backend.",
     icon: Shield,
-    chips: ["Python", "Evals"],
+    chips: ["FastAPI", "DeBERTa", "Docker"],
     tint: "bg-demo-success/15",
     href: "https://github.com/Vic-41148/secure-llm-inference-platform",
     external: true,
-    meta: "★5 · 4 forks",
+    meta: "217 rules · 14 categories",
     // TODO(real-cover): add a real architecture diagram (attack -> defense ->
     // eval flow) at /images/projects/secure-llm-arch.svg per handoff #3 B1
     // row 02. Do not fabricate a screenshot.

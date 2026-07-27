@@ -1,8 +1,8 @@
 ---
 title: How Do You Know Your LLM Defense Actually Works?
-excerpt: Building a systematic evaluation framework for prompt injection and jailbreak detection — and why pass/fail isn't enough.
+excerpt: A four-stage defense pipeline for prompt injection — 217 rules, a fine-tuned classifier, and what 23 test prompts actually proved.
 date: 2026-04-12
-readTime: 12 min
+readTime: 6 min
 tags: Security, LLMs
 ---
 
@@ -14,19 +14,27 @@ That's not testing. That's hoping.
 
 ## Building a framework
 
-The secure-llm-inference-platform project is a systematic evaluation framework. It:
+Neuro-Sentry is the answer we built for that — a four-person university project where I led the backend, the detection pipeline, and the red-team side. It runs every prompt through four stages:
 
-1. **Generates attacks** from templates (role-play, hypothetical framing, encoding, context manipulation) and mutates them for variety
-2. **Tests across defense layers** — input filtering, prompt sanitization, output classification
-3. **Scores each attack** on a rubric: blocked, partial bypass, full bypass
-4. **Produces a report** with per-category breakdown, regression tracking, and a summary
+1. **Rule engine** — 217 regex patterns across 14 categories (jailbreak, injection, extraction, encoding, social engineering, privilege escalation, and more), with input normalization to defeat homoglyphs and zero-width padding. Roughly 0.1ms.
+2. **Local classifier** — a fine-tuned DeBERTa v3 binary model, 8-13ms warm.
+3. **Score fusion** — weighted 0.4 rules to 0.6 model, with a critical-rule floor and an obfuscation penalty.
+4. **Decision** — block, flag, or allow, with the whole thing written to an audit log.
+
+Anything the rules score at 85 or above short-circuits straight to a block without touching the model. Most obvious attacks never reach the expensive stage.
 
 ## What we found
 
-The most effective single attack type? Combining role-play with hypothetical framing — a compound attack that neither category alone catches. A single-layer defense caught about 60% of attacks. Layered defenses (input filter + output classifier) caught 90%+.
+Two things worth writing down.
+
+**Score fusion will happily dilute a real threat.** A confidently benign-looking model score kept dragging genuinely dangerous prompts under the block threshold. Averaging is a reasonable default, but it treats every signal as negotiable. The fix was a floor: dangerous-content rules force a minimum risk of 75 regardless of what the classifier thinks.
+
+**Cheap checks first changes the economics.** Putting regex ahead of the model wasn't about accuracy, it was about cost — the median request never pays for inference at all.
+
+On a 23-prompt adversarial and benign set: 18 blocked, 3 flagged, 2 allowed — both of those genuinely benign. Zero false negatives, 91% accuracy, average risk score 74.2.
 
 ## The honest part
 
-The attack generator itself can produce harmful content during development. We built an airlock — generated attacks go through a human review gate before reaching the target model.
+Twenty-three prompts is a sanity check, not a benchmark. Real evaluation needs hundreds of examples and, more importantly, adversaries who adapt once they learn how the defense behaves — a static test set only proves you catch the attacks you already thought of.
 
-Also: every defense has blind spots. The goal isn't 100% (impossible) — it's knowing where your blind spots are and shrinking them.
+Every defense has blind spots. The goal isn't 100%, which is unreachable. It's knowing where the blind spots are and shrinking them on purpose.

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ExternalLink, Users } from "lucide-react";
 import type { Metadata } from "next";
 import { GitHubIcon } from "@/components/icons";
 
@@ -16,6 +16,9 @@ const projects: Record<string, {
   results: string;
   failure: string;
   honestNote?: string;
+  /** Collaborators and the split of work. Omitted on solo projects — stating
+   *  it only where it applies keeps it meaningful rather than boilerplate. */
+  team?: string;
 }> = {
   "webcam-transfer-learning": {
     title: "Teach My Page to See",
@@ -31,17 +34,18 @@ const projects: Record<string, {
     honestNote: "Accuracy drops significantly in poor lighting or with motion blur. It's a demo, not a product — but the pipeline architecture is real and the on-device training is genuine.",
   },
   "secure-llm-inference-platform": {
-    title: "Secure LLM Inference & Eval Platform",
-    subtitle: "Systematic LLM security evaluation framework",
-    problem: "LLM safety evaluation is ad-hoc. Most teams manually try a few jailbreaks and call it done. We needed a systematic framework that generates adversarial prompts, tests across multiple defense layers, and gives actionable metrics — not a pass/fail score.",
-    outcome: ["5 stars · 4 forks", "Full-stack platform", "Active development"],
+    title: "Neuro-Sentry — LLM Threat Detection",
+    subtitle: "A layered defense pipeline for prompt injection and jailbreaks",
+    problem: "LLM safety testing is mostly vibes: throw a few jailbreaks at the model, watch it refuse, call it secure. That tells you nothing about coverage, nothing about latency cost, and nothing about what happens when an attacker adapts. The goal was a system that both attacks and defends, and reports numbers for each.",
+    outcome: ["217 rules · 14 categories", "0 false negatives on the eval set", "~8-13ms warm inference"],
     links: { github: "https://github.com/Vic-41148/secure-llm-inference-platform", demo: null },
-    tech: ["Python", "FastAPI", "React", "Groq API", "Docker"],
-    decision: "Template-based generation over pure LLM-based generation. Templates give us interpretable attack categories while seeded LLM variations cover novel cases. The hybrid approach is more maintainable than either alone.",
-    architecture: "Attack generator (templates + LLM seeding) → prompt sanitizer → target model → response classifier → scoring pipeline. A React frontend provides real-time dashboards with per-category breakdown and regression tracking.",
-    results: "First open-source release received 5 stars and 4 forks. The platform has been used internally to evaluate multiple defense configurations and identify blind spots in single-layer approaches.",
-    failure: "The first classifier overfit to template patterns. Switching to a rubric-based scoring approach generalized better to novel attacks at the cost of higher per-evaluation latency.",
-    honestNote: "The attack generator can itself produce harmful content during development — we built an airlock pipeline with human review before any generated attack reaches the target model.",
+    tech: ["FastAPI", "DeBERTa v3", "PyTorch", "Groq (Llama 3.3 70B)", "React", "Docker"],
+    team: "Four-person university project (KR Mangalam, BCA AI & DS). I led it and built the backend — the detection pipeline, the rule engine, and the attack-simulation and red-team tooling. Akash Sharma worked on blue-team defense logic; Bhavya Rattan and Lakshya Dangwal built the frontend and visualization.",
+    decision: "Rules before the model, not instead of it. A regex engine catches known attack shapes in about 0.1ms, so obvious attempts never reach the classifier at all — anything scoring 85 or above short-circuits straight to a block. The fine-tuned DeBERTa only runs on what survives, which keeps the median request cheap while still catching novel phrasing.",
+    architecture: "Stage 1: 217 regex rules across 14 categories (jailbreak, injection, extraction, encoding, social engineering, privilege escalation, and more) with input normalization to defeat homoglyphs and zero-width padding. Stage 2: a fine-tuned DeBERTa v3 binary classifier on GPU or CPU. Stage 3: weighted score fusion (0.4 rules / 0.6 model) with a critical-rule floor and an obfuscation penalty. The result blocks, flags, or allows. Around it: adaptive per-session escalation for repeat probers, structured audit logging, API-key auth, and Groq for the actual LLM response.",
+    results: "On a 23-prompt adversarial and benign set: 18 blocked, 3 flagged, 2 allowed — both of the allowed ones genuinely benign. Zero false negatives, 91% accuracy, average risk score 74.2. Warm inference runs 8-13ms; cold start is about 3.4 seconds while the model loads. Batch red-team runs stream results over SSE and export to CSV, JSON, or PDF.",
+    failure: "Dangerous-content rules kept getting diluted by the classifier — a confidently benign-looking ML score would drag a genuinely harmful prompt under the block threshold. The fix was a floor: DC-category matches force a minimum risk of 75 regardless of what the model thinks. Score fusion is a good default, not something to trust unconditionally.",
+    honestNote: "The 91% figure comes from 23 prompts. That is an honest sanity check, not a benchmark — a real evaluation needs hundreds of examples and adversaries who adapt to the defense. The public GitHub repo is an earlier version of this system; the current one isn't published yet.",
   },
   "codeshield": {
     title: "CodeShield",
@@ -55,6 +59,8 @@ const projects: Record<string, {
     results: "Built for IBM ThinkFest 2026. Concurrent readers feed a 5-minute sliding window backed by custom hashmaps, with weighted scoring generating real-time alerts at configurable sensitivity.",
     failure: "Initial scoring used a simple threshold approach that generated too many false positives. We iterated to a weighted scoring model that considers event frequency, severity, and recency — more accurate but required careful tuning.",
     honestNote: "The current version uses hand-tuned scoring rules rather than learned thresholds. A production version would benefit from ML-based anomaly scoring on top of the real-time pipeline.",
+    // TODO(team): add collaborator names and the split of work for ThinkFest.
+    team: "Built with a team for IBM ThinkFest 2026.",
   },
   "game-boy-emulator": {
     title: "Game Boy Emulator",
@@ -168,6 +174,20 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
             </a>
           )}
         </div>
+
+        {/* Sits above the write-up rather than in a footnote: who did what is
+            context for everything below it, and burying it reads as hiding it. */}
+        {project.team && (
+          <div className="mb-12 rounded-xl border border-border bg-surface p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="w-4 h-4 text-accent" />
+              <h2 className="text-xs font-mono uppercase tracking-wider text-text-muted">
+                Team project
+              </h2>
+            </div>
+            <p className="text-sm text-text-secondary leading-relaxed">{project.team}</p>
+          </div>
+        )}
 
         <div className="space-y-12">
           <section>

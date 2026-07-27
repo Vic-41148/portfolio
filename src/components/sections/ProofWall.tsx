@@ -4,10 +4,10 @@ import { BadgeCheck } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 
 const facts = [
-  { headline: "Real stars, not seeded.", detail: "★5 · 4 forks on the LLM eval platform.", source: "GitHub" },
+  { headline: "Measured, not asserted.", detail: "217 detection rules, 0 false negatives on the eval set.", source: "Neuro-Sentry" },
   { headline: "Not a class project.", detail: "CodeShield was built and shipped for IBM ThinkFest 2026.", source: "ThinkFest" },
   { headline: "30+ fps, zero round-trips.", detail: "Hand tracking runs fully in-browser, on-device.", source: "Live demo" },
-  { headline: "Five for five.", detail: "5 projects, 5 public repos — nothing private, nothing hidden.", source: "GitHub" },
+  { headline: "Shown, not claimed.", detail: "Real commits, real dead ends — including the half-finished parts.", source: "GitHub" },
   { headline: "No drag-and-drop.", detail: "C++, Python, WebGPU. No low-code builder in sight.", source: "Stack" },
   { headline: "Built in the open.", detail: "Even the half-finished emulator is public — every commit visible.", source: "Game Boy Emulator" },
 ];
