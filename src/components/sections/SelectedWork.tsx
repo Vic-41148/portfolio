@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ComponentType } from "react";
-import { ArrowUpRight, Eye, Shield, Cpu, Gamepad2, Gauge, Flame, Check } from "lucide-react";
+import { ArrowUpRight, Eye, Shield, Cpu, Gamepad2, Gauge, Flame, Check, Store, Terminal } from "lucide-react";
 import Link from "next/link";
 import { cn, trackSpotlight } from "@/lib/utils";
 import { Reveal, MaskText } from "@/components/Reveal";
@@ -106,6 +106,19 @@ const allProjects = [
     // TODO(real-cover): replace with a real screenshot of a game running in the
     // emulator at /images/projects/emulator-shot.png per handoff #3 B1 row 04 —
     // the standout asset, get this one done first.
+    difficulty: 5,
+  },
+  {
+    num: "04",
+    slug: "retailforge",
+    title: "RetailForge POS",
+    description: "A modern, offline-first Point of Sale and Business Management app built for retail shops. (Demo available for download).",
+    icon: Store,
+    chips: ["Tauri", "Rust", "React", "SQLite"],
+    tint: "bg-accent/15",
+    href: "/work/retailforge",
+    repo: "https://codeberg.org/averix-global-tech/retailforge",
+    meta: "Internship · Averix Global Tech",
     difficulty: 5,
   },
   {
@@ -291,9 +304,18 @@ export function SelectedWork() {
                 server to feel alive, it&apos;s probably mine.
               </p>
             </div>
-            <span className="hidden sm:block text-xs font-mono text-text-muted tracking-wider uppercase">
-              &larr; scroll &rarr;
-            </span>
+            <div className="hidden sm:flex flex-col items-end gap-3">
+              <Link
+                href="/work"
+                className="flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary transition-colors shrink-0"
+              >
+                View all case studies
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+              <span className="text-xs font-mono text-text-muted tracking-wider uppercase">
+                &larr; scroll &rarr;
+              </span>
+            </div>
           </div>
         </Reveal>
       </div>

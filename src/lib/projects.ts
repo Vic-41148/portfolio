@@ -19,6 +19,20 @@ export interface Project {
 }
 
 export const PROJECTS: Record<string, Project> = {
+  "retailforge": {
+    title: "RetailForge POS",
+    subtitle: "Modern, offline-first Point of Sale desktop application",
+    problem: "Most billing software in retail shops is clunky, ancient, and relies heavily on constant internet connectivity. It often lacks modern ecosystem features like integrated customer loyalty, deep analytics, and smooth UI automation.",
+    outcome: ["Full POS ecosystem", "Offline-first capability", "Built-in loyalty program"],
+    links: { github: "https://codeberg.org/averix-global-tech/retailforge", demo: "/downloads/RetailForge-Demo-1.0.0.exe" },
+    tech: ["Tauri v2", "Rust", "React 19", "SQLite", "TypeScript"],
+    team: "Developed as part of my professional internship at Averix Global Tech.",
+    decision: "Tauri over Electron for the desktop shell. By using Rust for the backend and native system integrations, we massively reduced the memory footprint and bundle size. An offline-first approach using local SQLite ensures that intermittent internet connectivity never stops business operations.",
+    architecture: "The application is split between a React 19 frontend and a Tauri (Rust) backend. It features barcode scanning, multi-tier pricing, GST calculations, and bill voiding with automatic stock restoration. The inventory module supports image galleries, variant matrices, and GRN tracking. I also built a self-hosted Ed25519 license key server (retailforge-keygen) in TypeScript to securely manage software activation.",
+    results: "Delivered a fully functional production-ready POS system that modernizes retail operations while remaining resilient to network outages.",
+    failure: "Building offline-first synchronization logic introduced complex state management challenges, particularly when resolving conflicts after the system comes back online.",
+    honestNote: "This project was a deep dive into building serious desktop applications using web technologies paired with a systems programming language. (Averix Global Tech is a private org, but demo builds are available.)",
+  },
   "webcam-transfer-learning": {
     title: "Teach My Page to See",
     subtitle: "Real-time webcam CV with in-browser training",
