@@ -2,3 +2,22 @@
 # https://opennext.js.org/cloudflare/caching#static-assets-caching
 /_next/static/*
   Cache-Control: public,max-age=31536000,immutable
+
+/downloads/*.exe
+  Content-Disposition: attachment
+  Content-Type: application/octet-stream
+/downloads/*.msi
+  Content-Disposition: attachment
+  Content-Type: application/octet-stream
+/downloads/*.deb
+  Content-Disposition: attachment
+  Content-Type: application/vnd.debian.binary-package
+/downloads/*.rpm
+  Content-Disposition: attachment
+  Content-Type: application/x-rpm
+/downloads/*.AppImage
+  Content-Disposition: attachment
+  Content-Type: application/octet-stream
+/downloads/*.apk
+  Content-Disposition: attachment
+  Content-Type: application/vnd.android.package-archive

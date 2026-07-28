@@ -22,17 +22,44 @@ const QUESTS = [
     ]
   },
   {
-    category: "Professional Work (Internship)",
+    category: "Hackathons",
     items: [
       {
-        title: "Averix ERP & Web Projects",
-        description: "Served as Project Lead and the backend/quality backbone for a suite of internal ERP systems (Averix ERP, Classics Express) and client-facing Astro/HTML sites (VISA WEB, Immigration) built during my internship at Averix Global Tech.",
-        href: "/side-quests/averix-web",
-        icon: GitPullRequest,
+        title: "Raksha — Safe Daily Decision",
+        description: "Made for WeatherWise Hack. An AI-powered safety decision app for families, factoring in real-time weather, flood risks, and historical disaster data via FastAPI, React, and Groq LLaMA 3.3.",
+        href: "/work/raksha",
+        icon: Wrench,
+        internal: true,
+      },
+      {
+        title: "SmartDesk / NH26",
+        description: "My first out-of-state hackathon at Surat, Gujarat. Travelled by train with two friends to build this workspace optimization application.",
+        href: "/work/smartdesk",
+        icon: Wrench,
+        internal: true,
+      },
+      {
+        title: "Legacy Modernizer",
+        description: "A tool to modernize legacy systems, built for the IBM Bob Hackathon.",
+        href: "/work/legacy-modernizer",
+        icon: GitHubIcon,
         internal: true,
       }
     ]
   },
+  {
+    category: "Internships",
+    items: [
+      {
+        title: "Smart Livestock Tracker",
+        description: "An internship project building a smart tracking system for livestock through wearable tech and data pipelines.",
+        href: "/work/smart-livestock-tracker",
+        icon: GitHubIcon,
+        internal: true,
+      }
+    ]
+  },
+
   {
     category: "Fun & Tinkering",
     items: [

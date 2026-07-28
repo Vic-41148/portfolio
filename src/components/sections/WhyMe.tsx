@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { Reveal, MaskText } from "@/components/Reveal";
 import { Star } from "lucide-react";
+import Link from "next/link";
 
 const reasons = [
   {
@@ -69,7 +70,11 @@ export function WhyMe() {
             <ScrubNum>
               <Star className="w-9 h-9 fill-current" />
             </ScrubNum>
-            <h3 className="font-display text-xl uppercase mb-2.5">Oh, this?</h3>
+            <h3 className="font-display text-xl uppercase mb-2.5">
+              <Link href="/work/codeshield" className="hover:text-accent transition-colors underline decoration-border hover:decoration-accent underline-offset-4">
+                Oh, this?
+              </Link>
+            </h3>
             <p className="text-sm leading-relaxed opacity-80">
               Built for IBM ThinkFest 2026. Not bad for a systems guy moonlighting in ML.
             </p>

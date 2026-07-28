@@ -1,6 +1,6 @@
 # Aditya Shibu — Portfolio
 
-Personal portfolio and blog. ML & Computer Vision Engineer focused on on-device inference, secure LLM systems, and browser-based demos.
+Personal portfolio and blog. ML & Computer Vision Engineer focused on on-device inference, secure LLM systems, and browser-based demos. Features comprehensive case studies of production-grade systems built during my time at Averix Global Tech (Averix ERP, Romoc, AGT Visa CRM) and award-winning hackathon builds (Raksha, ResolveIQ, Legacy Modernizer).
 
 ## Tech Stack
 
@@ -8,6 +8,7 @@ Personal portfolio and blog. ML & Computer Vision Engineer focused on on-device 
 - **Styling:** Tailwind CSS 4
 - **Animation:** Framer Motion (`motion`)
 - **Deployment:** Cloudflare Workers via OpenNext
+- **Database:** Cloudflare D1 (Subscribers)
 - **Contact:** Resend API
 
 ## Getting Started
@@ -131,12 +132,12 @@ then renders a "Discuss on LinkedIn" link.
 ```
 src/
 ├── app/              # Next.js App Router pages
-│   ├── api/contact/  # Contact form API route
-│   ├── work/         # Project detail pages
-│   └── writing/      # Blog posts
+│   ├── api/          # API endpoints (contact, subscribe, admin controls)
+│   ├── work/         # Case studies & Project details (RetailForge, Romoc, Raksha, etc.)
+│   └── writing/      # Blog listing & Konami-code writing editor
 ├── components/       # React components
 │   ├── demo/         # Interactive ML demos (TeachDemo)
-│   ├── layout/       # Nav, Footer
-│   └── sections/     # Homepage sections
-└── lib/              # Utilities, hooks, constants
+│   ├── layout/       # Nav, Footer, Shortlist
+│   └── sections/     # Homepage sections (Hero, SelectedWork, WhyMe, LinkedIn)
+└── lib/              # Constant registries (projects.tsx, side-quests.tsx), hooks, utils
 ```
