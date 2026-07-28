@@ -324,6 +324,17 @@
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 10px rgba(0, 0, 0, 0.3);
   }
 
+  /* JS-driven active card: same treatment as :hover but triggerable from scroll logic */
+  .card-hover.is-active {
+    transform: translateY(-3px);
+    border-color: var(--text-muted);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16), 0 3px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .dark .card-hover.is-active {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
   /* Feature cards (01/02) sit higher than small cards — depth reinforces hierarchy */
   .card-feature {
     background: var(--elevated);
@@ -345,6 +356,14 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 24px 56px rgba(0, 0, 0, 0.5);
   }
 
+  .card-feature.card-hover.is-active {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18), 0 20px 48px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .card-feature.card-hover.is-active {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 24px 56px rgba(0, 0, 0, 0.5);
+  }
+
   .card-accent-border {
     position: relative;
     overflow: hidden;
@@ -362,7 +381,8 @@
     pointer-events: none;
   }
 
-  .card-accent-border:hover::before {
+  .card-accent-border:hover::before,
+  .card-accent-border.is-active::before {
     border-color: var(--accent);
   }
 
@@ -424,7 +444,11 @@
     display: flex;
     gap: 1.25rem;
     overflow-x: auto;
-    padding-bottom: 0.5rem;
+    /* padding-top gives cards room to translateY(-3px) on hover without being
+       clipped by the implicit overflow-y:auto that overflow-x:auto creates. */
+    padding-top: 10px;
+    margin-top: -10px;
+    padding-bottom: 1rem;
     scrollbar-width: none;
     cursor: grab;
   }
@@ -690,7 +714,8 @@
     transition: opacity 0.35s ease;
   }
 
-  .card-spotlight:hover::after {
+  .card-spotlight:hover::after,
+  .card-spotlight.is-active::after {
     opacity: 1;
   }
 
@@ -699,7 +724,8 @@
     transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .group:hover .cover-zoom {
+  .group:hover .cover-zoom,
+  .group.is-active .cover-zoom {
     transform: scale(1.06);
   }
 
