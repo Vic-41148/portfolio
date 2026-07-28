@@ -109,7 +109,7 @@ const allProjects = [
     difficulty: 5,
   },
   {
-    num: "04",
+    num: "05",
     slug: "retailforge",
     title: "RetailForge POS",
     description: "A modern, offline-first Point of Sale and Business Management app built for retail shops. (Demo available for download).",
@@ -122,7 +122,7 @@ const allProjects = [
     difficulty: 5,
   },
   {
-    num: "05",
+    num: "06",
     slug: "primetrade-mlops",
     title: "primetrade-mlops-round0",
     description: "An MLOps batch pipeline: rolling-signal generation, containerized with Docker and wired for structured observability.",
@@ -299,7 +299,7 @@ export function SelectedWork() {
                 <MaskText>Things I actually shipped</MaskText>
               </h2>
               <p className="section-desc">
-                Five projects, five different stacks, zero tutorials followed
+                Six projects, six different stacks, zero tutorials followed
                 to the letter. If it runs at the edge and doesn&apos;t need a
                 server to feel alive, it&apos;s probably mine.
               </p>
