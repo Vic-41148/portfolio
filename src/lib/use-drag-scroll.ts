@@ -97,9 +97,9 @@ export function useDragScroll<T extends HTMLElement>(options?: { loop?: boolean 
     };
 
     const runMomentum = () => {
-      if (Math.abs(velocity) < 0.02) return;
-      el.scrollLeft -= velocity * 16;
-      velocity *= 0.94;
+      if (Math.abs(velocity) < 0.015) return;
+      el.scrollLeft -= velocity * 20;
+      velocity *= 0.96;
       momentumRaf = requestAnimationFrame(runMomentum);
     };
 

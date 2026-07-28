@@ -424,7 +424,6 @@
     display: flex;
     gap: 1.25rem;
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
     padding-bottom: 0.5rem;
     scrollbar-width: none;
     cursor: grab;
@@ -441,7 +440,6 @@
   }
 
   .slider-item {
-    scroll-snap-align: start;
     flex: 0 0 auto;
   }
 
