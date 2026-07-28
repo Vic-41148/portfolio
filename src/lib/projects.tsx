@@ -96,7 +96,7 @@ export const PROJECTS: Record<string, Project> = {
       { label: "Linux — AppImage",         sub: ".AppImage · 5.4 MB · Universal, just run it",  href: "/downloads/RetailForge_1.0.0_amd64.AppImage",        platform: "linux" },
       { label: "Linux — Debian / Ubuntu",  sub: ".deb · 4.9 MB · Ubuntu 20.04+, Debian 11+",   href: "/downloads/RetailForge_1.0.0_amd64.deb",             platform: "linux" },
       { label: "Linux — Fedora / RHEL",   sub: ".rpm · 4.9 MB · Fedora 38+, RHEL 9+",         href: "/downloads/RetailForge-1.0.0-1.x86_64.rpm",          platform: "linux" },
-      { label: "Android",                  sub: ".apk · 44 MB · Android 8.0+",                  href: "/downloads/RetailForge-signed.apk",                  platform: "android", badge: "signed ✓" },
+      { label: "Android",                  sub: "Temporarily unavailable (too large)",                  href: "#",                  platform: "android", badge: "Coming soon" },
     ],
     licenseNote: "The demo runs with limited functionality. For a full activation key, contact Averix Global Tech at averixglobaltech.com.",
   },
