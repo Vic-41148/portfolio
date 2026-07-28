@@ -284,6 +284,89 @@ function ProductCard({ project, index }: { project: typeof allProjects[number]; 
 export function SelectedWork() {
   const sliderRef = useDragScroll<HTMLDivElement>({ loop: true });
 
+  // Track the "active" card: the one nearest the slider center during scroll,
+  // overridden by whichever card the mouse is currently over.
+  useEffect(() => {
+    const el = sliderRef.current;
+    if (!el) return;
+
+    let mouseCard: HTMLElement | null = null;
+    let rafScheduled = false;
+
+    const getCards = () =>
+      Array.from(el.querySelectorAll<HTMLElement>(".card-hover"));
+
+    const setActive = (card: HTMLElement | null) => {
+      getCards().forEach((c) => c.classList.remove("is-active"));
+      card?.classList.add("is-active");
+    };
+
+    const findCenterCard = (): HTMLElement | null => {
+      const cards = getCards();
+      if (!cards.length) return null;
+      const sliderCenter =
+        el.getBoundingClientRect().left + el.clientWidth / 2;
+      let best: HTMLElement | null = null;
+      let bestDist = Infinity;
+      for (const card of cards) {
+        const rect = card.getBoundingClientRect();
+        const dist = Math.abs(rect.left + rect.width / 2 - sliderCenter);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = card;
+        }
+      }
+      return best;
+    };
+
+    const updateActive = () => {
+      if (!rafScheduled) {
+        rafScheduled = true;
+        requestAnimationFrame(() => {
+          rafScheduled = false;
+          // Mouse card takes priority; fall back to center card.
+          setActive(mouseCard ?? findCenterCard());
+        });
+      }
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      const cards = getCards();
+      let found: HTMLElement | null = null;
+      for (const card of cards) {
+        const rect = card.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right) {
+          found = card;
+          break;
+        }
+      }
+      if (found !== mouseCard) {
+        mouseCard = found;
+        updateActive();
+      }
+    };
+
+    const onMouseLeave = () => {
+      mouseCard = null;
+      updateActive();
+    };
+
+    el.addEventListener("scroll", updateActive, { passive: true });
+    el.addEventListener("mousemove", onMouseMove);
+    el.addEventListener("mouseleave", onMouseLeave);
+
+    // Set initial active card after layout settles.
+    requestAnimationFrame(updateActive);
+
+    return () => {
+      el.removeEventListener("scroll", updateActive);
+      el.removeEventListener("mousemove", onMouseMove);
+      el.removeEventListener("mouseleave", onMouseLeave);
+    };
+    // sliderRef.current is stable after mount; exhaustive-deps would be wrong here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <section id="work" className="py-24 sm:py-32 relative overflow-hidden">
       <Ghost word="Work" className="right-[-1%] top-8" />
