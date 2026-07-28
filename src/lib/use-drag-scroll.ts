@@ -23,7 +23,16 @@ export function useDragScroll<T extends HTMLElement>(options?: { loop?: boolean 
 
     if (loop) {
       let setWidth = el.scrollWidth / 3;
+
+      // Set scroll position before the browser has painted, then reveal.
+      // Without this the slider briefly shows copy 0 (scrollLeft=0) before
+      // snapping to the center copy, which looks like a loading flash.
+      el.style.visibility = "hidden";
       el.scrollLeft = setWidth;
+      // Use rAF so the scroll settles before we make it visible.
+      requestAnimationFrame(() => {
+        el.style.visibility = "";
+      });
 
       const onResize = () => {
         setWidth = el.scrollWidth / 3;
