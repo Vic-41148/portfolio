@@ -208,7 +208,7 @@ export const PROJECTS: Record<string, Project> = {
     failure: "The Caddy routing configuration was initially too strict, dropping WebSocket connections needed for background worker updates due to missing header forwards. We spent hours debugging why updates were stalling until we fixed the reverse-proxy configuration.",
   },
   "raksha": {
-    title: "🛡️ Raksha — Safe Daily Decision",
+    title: "Raksha — Safe Daily Decision",
     subtitle: "AI-powered safety decision app for families",
     problem: (
       <>
@@ -240,7 +240,7 @@ export const PROJECTS: Record<string, Project> = {
     failure: "The app works fine, but it told my teammate not to go out to buy snacks because of a 0.2mm drizzle. It turns out LLaMA is highly risk-averse when you toggle the family profile modifier to maximum.",
   },
   "smartdesk": {
-    title: "⚡ ResolveIQ (SmartDesk / NH26)",
+    title: "ResolveIQ (SmartDesk / NH26)",
     subtitle: "AI-Powered Customer Support & Escalation Engine",
     problem: (
       <>
@@ -272,7 +272,7 @@ export const PROJECTS: Record<string, Project> = {
     failure: "Nothing broke permanently, but we ran out of coffee at 3 AM in Surat, and my buddy started naming variables in Gujarati. Clean code guidelines do not survive sleep deprivation.",
   },
   "legacy-modernizer": {
-    title: "⚙️ Legacy Modernizer",
+    title: "Legacy Modernizer",
     subtitle: "Real-time Java AST modernization platform",
     problem: (
       <>
@@ -304,7 +304,7 @@ export const PROJECTS: Record<string, Project> = {
     failure: "The tool modernizes legacy code so fast it made our hackathon presentation look fake. We had to add a simulated loading delay just so the judges believed Bob was actually rewriting the files.",
   },
   "smart-livestock-tracker": {
-    title: "🐄 Cattle Monitoring Collar (Smart Livestock Tracker)",
+    title: "Cattle Monitoring Collar (Smart Livestock Tracker)",
     subtitle: "IoT wearable bovine health tracker & data pipeline",
     problem: (
       <>
