@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Shield, Brain, Terminal, Store } from "lucide-react";
+import { 
+  ArrowLeft, ArrowUpRight, 
+  Shield, Brain, Terminal, Store, 
+  Globe, Smartphone, Database, Briefcase, Cpu, LineChart 
+} from "lucide-react";
 import type { Metadata } from "next";
 import { PROJECTS } from "@/lib/projects";
 
@@ -11,14 +15,59 @@ export const metadata: Metadata = {
 // Map the slugs to their visual treatment since PROJECTS doesn't contain UI metadata
 const allProjects = [
   {
+    slug: "retailforge",
+    icon: Store,
+    tint: "text-accent bg-accent/15 border-accent/20",
+  },
+  {
+    slug: "romoc",
+    icon: Smartphone,
+    tint: "text-demo-success bg-demo-success/15 border-demo-success/20",
+  },
+  {
+    slug: "averix-website",
+    icon: Globe,
+    tint: "text-accent bg-accent/15 border-accent/20",
+  },
+  {
+    slug: "averix-erp",
+    icon: Database,
+    tint: "text-demo-warning bg-demo-warning/15 border-demo-warning/20",
+  },
+  {
+    slug: "agt-visa-crm",
+    icon: Briefcase,
+    tint: "text-demo-success bg-demo-success/15 border-demo-success/20",
+  },
+  {
+    slug: "raksha",
+    icon: Shield,
+    tint: "text-demo-warning bg-demo-warning/15 border-demo-warning/20",
+  },
+  {
+    slug: "smartdesk",
+    icon: Globe,
+    tint: "text-accent bg-accent/15 border-accent/20",
+  },
+  {
+    slug: "legacy-modernizer",
+    icon: Terminal,
+    tint: "text-demo-success bg-demo-success/15 border-demo-success/20",
+  },
+  {
+    slug: "smart-livestock-tracker",
+    icon: Cpu,
+    tint: "text-demo-warning bg-demo-warning/15 border-demo-warning/20",
+  },
+  {
     slug: "secure-llm-inference-platform",
     icon: Shield,
     tint: "text-demo-success bg-demo-success/15 border-demo-success/20",
   },
   {
-    slug: "retailforge",
-    icon: Store,
-    tint: "text-accent bg-accent/15 border-accent/20",
+    slug: "webcam-transfer-learning",
+    icon: Brain,
+    tint: "text-demo-warning bg-demo-warning/15 border-demo-warning/20",
   },
   {
     slug: "codeshield",
@@ -26,8 +75,13 @@ const allProjects = [
     tint: "text-accent bg-accent/15 border-accent/20",
   },
   {
-    slug: "neuro-learn-visualizer",
-    icon: Brain,
+    slug: "game-boy-emulator",
+    icon: Cpu,
+    tint: "text-accent bg-accent/15 border-accent/20",
+  },
+  {
+    slug: "primetrade-mlops",
+    icon: LineChart,
     tint: "text-demo-warning bg-demo-warning/15 border-demo-warning/20",
   },
 ];
