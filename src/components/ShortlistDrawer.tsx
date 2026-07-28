@@ -88,7 +88,11 @@ export function ShortlistDrawer() {
 
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {items.length === 0 ? (
-                <div className="text-center py-16">
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-16"
+                >
                   <p className="font-display text-2xl text-text-primary mb-2">Nothing yet</p>
                   <p className="text-sm text-text-muted mb-6">
                     Add the projects you want to talk about and send them over in one go.
@@ -100,42 +104,50 @@ export function ShortlistDrawer() {
                     Browse the work
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
-                </div>
+                </motion.div>
               ) : (
-                <ul>
-                  {items.map((item) => (
-                    <li
-                      key={item.slug}
-                      className="flex items-center gap-3 py-3 border-b border-border last:border-0"
-                    >
-                      <a
-                        href={item.href}
-                        className="flex-1 text-sm font-medium hover:text-accent transition-colors"
+                <ul className="relative">
+                  <AnimatePresence initial={false}>
+                    {items.map((item) => (
+                      <motion.li
+                        key={item.slug}
+                        initial={{ opacity: 0, x: -20, height: 0 }}
+                        animate={{ opacity: 1, x: 0, height: "auto" }}
+                        exit={{ opacity: 0, x: 20, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex items-center gap-3 py-3 border-b border-border last:border-0 overflow-hidden"
                       >
-                        {item.title}
-                      </a>
-                      <button
-                        onClick={() => remove(item.slug)}
-                        className="text-text-muted hover:text-accent transition-colors focus-ring rounded-sm"
-                        aria-label={`Remove ${item.title} from shortlist`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </li>
-                  ))}
+                        <a
+                          href={item.href}
+                          className="flex-1 text-sm font-medium hover:text-accent transition-colors"
+                        >
+                          {item.title}
+                        </a>
+                        <motion.button
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => remove(item.slug)}
+                          className="text-text-muted hover:text-accent transition-colors focus-ring rounded-sm"
+                          aria-label={`Remove ${item.title} from shortlist`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </motion.button>
+                      </motion.li>
+                    ))}
+                  </AnimatePresence>
                 </ul>
               )}
             </div>
 
             {items.length > 0 && (
               <div className="px-6 py-5 border-t border-border space-y-3">
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
                   onClick={discuss}
                   className="btn-sheen inline-flex w-full items-center justify-center gap-2 px-6 py-3 rounded-full bg-accent text-accent-foreground font-medium transition-all hover:brightness-110 focus-ring"
                 >
                   Start the conversation
                   <Send className="w-4 h-4" />
-                </button>
+                </motion.button>
 
                 <div className="flex items-center justify-between">
                   <a

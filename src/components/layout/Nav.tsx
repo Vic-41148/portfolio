@@ -149,11 +149,22 @@ export function Nav() {
           <button
             ref={toggleRef}
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="sm:hidden text-text-muted hover:text-text-primary transition-colors focus-ring rounded-sm p-1"
+            className="sm:hidden relative text-text-muted hover:text-text-primary transition-colors focus-ring rounded-sm p-1 w-7 h-7 flex items-center justify-center"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mobileOpen ? "close" : "open"}
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 90 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex items-center justify-center"
+              >
+                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </motion.div>
+            </AnimatePresence>
           </button>
         </div>
       </div>
@@ -184,22 +195,28 @@ export function Nav() {
               className="absolute right-0 top-0 bottom-0 w-72 max-w-[85vw] bg-surface border-l border-border p-6 flex flex-col shadow-2xl"
             >
               <nav className="flex flex-col gap-2" role="navigation" aria-label="Mobile navigation">
-                {links.map((link) => {
+                {links.map((link, i) => {
                   const isHash = link.href.includes("#");
                   const Component = isHash ? "a" : Link;
 
                   return (
-                    <Component
+                    <motion.div
                       key={link.href}
-                      href={link.href}
-                      onClick={(e: React.MouseEvent) => {
-                        if (isHash) { e.preventDefault(); }
-                        handleNavClick(link.href);
-                      }}
-                      className="text-lg font-display font-normal py-3 px-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-elevated transition-colors"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: 0.1 + i * 0.05 }}
                     >
-                      {link.label}
-                    </Component>
+                      <Component
+                        href={link.href}
+                        onClick={(e: React.MouseEvent) => {
+                          if (isHash) { e.preventDefault(); }
+                          handleNavClick(link.href);
+                        }}
+                        className="block text-lg font-display font-normal py-3 px-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-elevated transition-colors"
+                      >
+                        {link.label}
+                      </Component>
+                    </motion.div>
                   );
                 })}
               </nav>
