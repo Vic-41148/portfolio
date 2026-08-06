@@ -4,7 +4,7 @@ import { BadgeCheck } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 
 const facts = [
-  { headline: "Measured, not asserted.", detail: "217 detection rules, 0 false negatives on the eval set.", source: "Neuro-Sentry" },
+  { headline: "Measured, not asserted.", detail: "217 detection rules, 1 false positive in 150 unseen prompts.", source: "Neuro-Sentry" },
   { headline: "Not a class project.", detail: "CodeShield was built and shipped for IBM ThinkFest 2026.", source: "ThinkFest" },
   { headline: "30+ fps, zero round-trips.", detail: "Hand tracking runs fully in-browser, on-device.", source: "Live demo" },
   { headline: "Shown, not claimed.", detail: "Real commits, real dead ends — including the half-finished parts.", source: "GitHub" },
