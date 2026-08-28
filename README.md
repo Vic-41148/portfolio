@@ -145,3 +145,4 @@ src/
 │   └── sections/     # Homepage sections (Hero, SelectedWork, WhyMe, LinkedIn)
 └── lib/              # Constant registries (projects.tsx, side-quests.tsx), hooks, utils
 ```
+
