@@ -15,6 +15,8 @@ Personal portfolio and blog. ML & Computer Vision Engineer focused on on-device 
 
 Have a question about a project, want to suggest a blog topic, or just want to connect? Head over to [Discussions](https://github.com/Vic-41148/portfolio/discussions) to join the conversation.
 
+Categories include Announcements, General, Q&A, Ideas, Polls, and Show and tell.
+
 ## Getting Started
 
 ```bash
