@@ -69,7 +69,7 @@ Setup (one time):
 3. For local development, `cp .env.example .env.local` and fill in the blanks —
    that file documents where each value comes from.
 
-The Konami code is discovery only — the password is verified server-side and the
+The Konami code is discovery only, the password is verified server-side and the
 editor is useless without it.
 
 ### Scheduling
