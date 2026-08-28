@@ -11,6 +11,10 @@ Personal portfolio and blog. ML & Computer Vision Engineer focused on on-device 
 - **Database:** Cloudflare D1 (Subscribers)
 - **Contact:** Resend API
 
+## Discussions
+
+Have a question about a project, want to suggest a blog topic, or just want to connect? Head over to [Discussions](https://github.com/Vic-41148/portfolio/discussions) to join the conversation.
+
 ## Getting Started
 
 ```bash
