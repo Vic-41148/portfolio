@@ -48,9 +48,6 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  alternates: {
-    canonical: "/",
-  },
 };
 
 /** Person + WebSite structured data. Searching a name is an entity lookup, not

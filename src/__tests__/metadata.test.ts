@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import sitemap from "@/app/sitemap";
 import { PROJECTS } from "@/lib/projects";
+import { SIDE_QUESTS } from "@/lib/side-quests";
 import { getPosts } from "@/lib/posts";
 import robots from "@/app/robots";
 import manifest from "@/app/manifest";
@@ -55,6 +56,24 @@ describe("sitemap", () => {
 
     for (const post of getPosts()) {
       expect(urls).toContain(`https://adityashibu.com/writing/${post.slug}`);
+    }
+  });
+
+  it("lists the section indexes and every side quest", () => {
+    const urls = sitemap().map((e) => e.url);
+
+    expect(urls).toContain("https://adityashibu.com/work");
+    expect(urls).toContain("https://adityashibu.com/side-quests");
+
+    for (const slug of Object.keys(SIDE_QUESTS)) {
+      expect(urls).toContain(`https://adityashibu.com/side-quests/${slug}`);
+    }
+  });
+
+  it("emits only apex https URLs", () => {
+    for (const entry of sitemap()) {
+      expect(entry.url).not.toContain("www.");
+      expect(entry.url).not.toMatch(/^http:/);
     }
   });
 });

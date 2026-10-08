@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/sections/Hero";
 import { Marquee } from "@/components/Marquee";
 import { Benefits } from "@/components/sections/Benefits";
@@ -12,6 +13,10 @@ import { SideQuests } from "@/components/sections/SideQuests";
 import { LinkedInPosts } from "@/components/sections/LinkedInPosts";
 import { Contact } from "@/components/sections/Contact";
 import { getPosts } from "@/lib/posts";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   const posts = getPosts().slice(0, 3);
