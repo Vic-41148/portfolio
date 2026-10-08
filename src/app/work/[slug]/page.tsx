@@ -13,6 +13,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${project.title} — ${project.subtitle}`,
     description: project.subtitle,
+    alternates: { canonical: `/work/${slug}` },
+    openGraph: {
+      title: project.title,
+      description: project.subtitle,
+      url: `/work/${slug}`,
+    },
   };
 }
 
